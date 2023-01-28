@@ -1,24 +1,24 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import {Inter} from '@next/font/google'
-import styles from '@/styles/Home.module.css'
-import {Header} from "../components/Header/Header";
-import {Sidebar} from "@/components/Sidebar/Sidebar";
-
-const inter = Inter({subsets: ['latin']})
+import { Inter } from "@next/font/google";
+import { Header } from "@/components/Header/Header";
+import { NavbarNested } from "@/components/NavbarNested/NavbarNested";
+import { AppShell, Navbar } from "@mantine/core";
 
 export default function Home() {
   return (
-    <>
-      <Header/>
-      <div className="flex h-screen">
-        <Sidebar/>
-        <main className="flex-1">
-          <h1 className="text-3xl font-bold underline bg-sky-300">
-            Hello world!
-          </h1>
-        </main>
-      </div>
-    </>
-  )
+    <AppShell
+      padding="md"
+      navbar={<NavbarNested />}
+      header={<Header />}
+      styles={(theme) => ({
+        main: {
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[8]
+              : theme.colors.gray[0],
+        },
+      })}
+    >
+      {/* Your application here */}
+    </AppShell>
+  );
 }
