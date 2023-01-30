@@ -16,13 +16,13 @@ export const Header = () => {
         </div>
         <div className="flex h-full w-full items-center justify-end">
           <div className="flex items-center space-x-2">
-            <button className="flex items-center justify-center">
+            <button className="flex items-center justify-center bg-transparent">
               <BellIcon className="h-5 w-5 text-gray-500" />
             </button>
 
             <hr className="border-t text-gray-500" />
 
-            <button className="flex items-center justify-center space-x-2">
+            <button className="flex items-center justify-center space-x-2 bg-transparent">
               <UserIcon className="h-7 w-7 rounded-full bg-gray-500 p-1 text-white" />
               <div className="flex items-center space-x-1">
                 <span className="text-sm font-medium text-gray-600">

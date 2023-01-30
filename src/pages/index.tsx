@@ -1,13 +1,17 @@
-import { Inter } from "@next/font/google";
 import { Header } from "@/components/Header/Header";
 import { NavbarNested } from "@/components/NavbarNested/NavbarNested";
-import { AppShell, Navbar } from "@mantine/core";
+import { AppShell, Title } from "@mantine/core";
+import { MantineForms } from "@/components/MantineForms/MantineForms";
+import { RHFMantineForms } from "@/components/RHFMantineForms/RHFMantineForms";
+import { NavbarSimple } from "@/components/NavbarSimple/NavbarSimple";
+import { NavbarSimpleMinimal } from "@/components/NavbarSimpleMinimal/NavbarSimpleMinimal";
 
 export default function Home() {
   return (
     <AppShell
       padding="md"
-      navbar={<NavbarNested />}
+      navbar={<NavbarSimple />}
+      // navbar={<NavbarSimpleMinimal />}
       header={<Header />}
       styles={(theme) => ({
         main: {
@@ -18,7 +22,14 @@ export default function Home() {
         },
       })}
     >
-      {/* Your application here */}
+      <div className="mx-auto max-w-[32rem]">
+        <Title order={2} mt={8} mb={16}>
+          アカウント情報
+        </Title>
+
+        <MantineForms />
+        <RHFMantineForms />
+      </div>
     </AppShell>
   );
 }
