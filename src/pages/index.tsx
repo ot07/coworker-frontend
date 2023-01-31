@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header/Header";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { AppShell, Title } from "@mantine/core";
-import { AccountForms } from "@/components/AccountForms/AccountForms";
+import { AccountSettings } from "@/components/AccountSettings/AccountSettings";
 
 export default function Home() {
   return (
@@ -19,13 +19,7 @@ export default function Home() {
           },
         })}
       >
-        <div className="mx-auto max-w-[32rem]">
-          <Title order={2} mt={8} mb={16}>
-            アカウント情報
-          </Title>
-
-          <AccountForms />
-        </div>
+        <AccountSettings />
       </AppShell>
     </>
   );
