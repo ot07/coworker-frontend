@@ -8,7 +8,7 @@ const mockdata = [
     icon: IconUser,
     links: [
       { label: "ログイン画面（工事中）", link: "/" },
-      { label: "アカウント情報（工事中）", link: "/" },
+      { label: "アカウント設定（工事中）", link: "/" },
     ],
   },
   {
