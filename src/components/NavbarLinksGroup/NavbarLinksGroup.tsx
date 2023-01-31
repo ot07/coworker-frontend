@@ -3,23 +3,19 @@ import {
   Group,
   Box,
   Collapse,
+  ThemeIcon,
   Text,
   UnstyledButton,
   createStyles,
 } from "@mantine/core";
-import {
-  TablerIcon,
-  IconCalendarStats,
-  IconChevronLeft,
-  IconChevronRight,
-} from "@tabler/icons";
+import { TablerIcon, IconChevronLeft, IconChevronRight } from "@tabler/icons";
 
 const useStyles = createStyles((theme) => ({
   control: {
     fontWeight: 500,
     display: "block",
     width: "100%",
-    padding: `8px ${theme.spacing.md}px`,
+    padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
     color:
       theme.colorScheme === "dark"
         ? theme.colors.dark[0]
@@ -38,9 +34,9 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 500,
     display: "block",
     textDecoration: "none",
-    padding: `8px ${theme.spacing.md}px`,
-    paddingLeft: 20,
-    marginLeft: 27,
+    padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+    paddingLeft: 31,
+    marginLeft: 30,
     fontSize: theme.fontSizes.sm,
     color:
       theme.colorScheme === "dark"
@@ -61,24 +57,13 @@ const useStyles = createStyles((theme) => ({
   chevron: {
     transition: "transform 200ms ease",
   },
-
-  active: {
-    borderColor: theme.colors[theme.primaryColor][6],
-    backgroundColor: theme.colors[theme.primaryColor][0],
-    color: theme.colors[theme.primaryColor][6],
-
-    "&:hover": {
-      backgroundColor: theme.colors[theme.primaryColor][0],
-      color: theme.colors[theme.primaryColor][6],
-    },
-  },
 }));
 
 interface LinksGroupProps {
   icon: TablerIcon;
   label: string;
   initiallyOpened?: boolean;
-  links?: { label: string; link: string; active?: boolean }[];
+  links?: { label: string; link: string }[];
 }
 
 export function LinksGroup({
@@ -87,14 +72,14 @@ export function LinksGroup({
   initiallyOpened,
   links,
 }: LinksGroupProps) {
-  const { classes, theme, cx } = useStyles();
+  const { classes, theme } = useStyles();
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const ChevronIcon = theme.dir === "ltr" ? IconChevronRight : IconChevronLeft;
   const items = (hasLinks ? links : []).map((link) => (
     <Text<"a">
       component="a"
-      className={cx(classes.link, { [classes.active]: link.active })}
+      className={classes.link}
       href={link.link}
       key={link.label}
       onClick={(event) => event.preventDefault()}
@@ -111,10 +96,10 @@ export function LinksGroup({
       >
         <Group position="apart" spacing={0}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            {/*<ThemeIcon variant="light" size={36} radius="md">*/}
-            <Icon size={22} stroke={1.5} />
-            {/*</ThemeIcon>*/}
-            <Box ml="xs">{label}</Box>
+            <ThemeIcon variant="light" size={30}>
+              <Icon size={18} />
+            </ThemeIcon>
+            <Box ml="md">{label}</Box>
           </Box>
           {hasLinks && (
             <ChevronIcon

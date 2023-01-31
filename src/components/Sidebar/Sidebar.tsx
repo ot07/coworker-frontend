@@ -1,66 +1,52 @@
-import {
-  CalendarIcon,
-  TableCellsIcon,
-  UserIcon,
-} from "@heroicons/react/24/outline";
-import { List, ThemeIcon } from "@mantine/core";
-import { IconCircleCheck, IconCircleDashed } from "@tabler/icons";
+import { Navbar, ScrollArea, createStyles } from "@mantine/core";
+import { IconCalendarStats, IconTable, IconUser } from "@tabler/icons";
+import { LinksGroup } from "../NavbarLinksGroup/NavbarLinksGroup";
 
-import { Box, NavLink } from "@mantine/core";
-import { IconGauge, IconFingerprint } from "@tabler/icons";
+const mockdata = [
+  {
+    label: "アカウント",
+    icon: IconUser,
+    links: [
+      { label: "ログイン画面（工事中）", link: "/" },
+      { label: "アカウント情報（工事中）", link: "/" },
+    ],
+  },
+  {
+    label: "テーブル（工事中）",
+    icon: IconTable,
+  },
+  { label: "カレンダー（工事中）", icon: IconCalendarStats },
+];
 
-import { Accordion } from "@mantine/core";
-import Link from "next/link";
+const useStyles = createStyles((theme) => ({
+  navbar: {
+    backgroundColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.white,
+    paddingBottom: 0,
+  },
 
-export const Sidebar = () => {
+  links: {
+    marginLeft: -theme.spacing.md,
+    marginRight: -theme.spacing.md,
+  },
+
+  linksInner: {
+    paddingTop: theme.spacing.sm,
+    paddingBottom: theme.spacing.sm,
+  },
+}));
+
+export function Sidebar() {
+  const { classes } = useStyles();
+  const links = mockdata.map((item) => (
+    <LinksGroup {...item} key={item.label} />
+  ));
+
   return (
-    <Box sx={{ width: 240 }} className="border-r">
-      <NavLink
-        label="アカウント"
-        icon={<UserIcon width={18} strokeWidth={1.5} />}
-        childrenOffset={20}
-        classNames={{ icon: "mr-2 text-gray-700", label: "text-gray-700" }}
-      >
-        <NavLink
-          pl={16}
-          label={
-            <Link href="/" className="block">
-              ログイン画面
-            </Link>
-          }
-          className="border-l border-solid border-blue-500 bg-sky-100 font-bold text-blue-500 hover:bg-sky-100"
-        />
-        <NavLink
-          pl={16}
-          label={<Link href="/">アカウント情報</Link>}
-          className="border-l border-solid border-gray-200 text-gray-700"
-        />
-      </NavLink>
-
-      <NavLink
-        label="テーブル"
-        icon={<TableCellsIcon width={18} strokeWidth={1.5} />}
-        childrenOffset={20}
-        classNames={{ icon: "mr-2 text-gray-700", label: "text-gray-700" }}
-      />
-
-      <NavLink
-        label="カレンダー"
-        icon={<CalendarIcon width={18} strokeWidth={1.5} />}
-        childrenOffset={20}
-        classNames={{ icon: "mr-2 text-gray-700", label: "text-gray-700" }}
-      >
-        <NavLink
-          pl={16}
-          label={<Link href="/">シフト表</Link>}
-          className="border-l border-solid border-gray-200 text-gray-700"
-        />
-        <NavLink
-          pl={16}
-          label={<Link href="/">予定カレンダー</Link>}
-          className="border-l border-solid border-gray-200 text-gray-700"
-        />
-      </NavLink>
-    </Box>
+    <Navbar width={{ sm: 300 }} px="md" className={classes.navbar}>
+      <Navbar.Section grow className={classes.links} component={ScrollArea}>
+        <div className={classes.linksInner}>{links}</div>
+      </Navbar.Section>
+    </Navbar>
   );
-};
+}
