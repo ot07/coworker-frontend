@@ -2,6 +2,7 @@ import Image from "next/image";
 import { UserIcon } from "@heroicons/react/24/solid";
 import { BellIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Header as MantineHeader } from "@mantine/core";
+import Link from "next/link";
 
 export const Header = () => {
   return (
@@ -12,7 +13,9 @@ export const Header = () => {
     >
       <div className="flex h-full items-center justify-center">
         <div className="relative flex h-full w-full items-center justify-start">
-          <Image src="logo.svg" alt="logo" width={64} height={0} />
+          <Link href="/" className="bg-transparent p-2">
+            <Image src="logo.svg" alt="logo" width={64} height={0} />
+          </Link>
         </div>
         <div className="flex h-full w-full items-center justify-end">
           <div className="flex items-center space-x-2">

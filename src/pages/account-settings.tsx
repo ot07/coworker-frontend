@@ -1,8 +1,9 @@
 import { Header } from "@/components/Header/Header";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
-import { AppShell, Box, Title } from "@mantine/core";
+import { AppShell } from "@mantine/core";
+import { AccountSettings } from "@/components/AccountSettings/AccountSettings";
 
-export default function Home() {
+export default function AccountSettingsPage() {
   return (
     <AppShell
       padding="md"
@@ -17,11 +18,7 @@ export default function Home() {
         },
       })}
     >
-      <Box mx="auto" className="max-w-[32rem]">
-        <Title order={2} mt={8} mb={16}>
-          トップページ（工事中）
-        </Title>
-      </Box>
+      <AccountSettings />
     </AppShell>
   );
 }
