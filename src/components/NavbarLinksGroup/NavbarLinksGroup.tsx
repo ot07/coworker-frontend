@@ -4,11 +4,11 @@ import {
   Box,
   Collapse,
   ThemeIcon,
-  Text,
   UnstyledButton,
   createStyles,
 } from "@mantine/core";
 import { TablerIcon, IconChevronLeft, IconChevronRight } from "@tabler/icons";
+import Link from "next/link";
 
 const useStyles = createStyles((theme) => ({
   control: {
@@ -77,15 +77,9 @@ export function LinksGroup({
   const [opened, setOpened] = useState(initiallyOpened || false);
   const ChevronIcon = theme.dir === "ltr" ? IconChevronRight : IconChevronLeft;
   const items = (hasLinks ? links : []).map((link) => (
-    <Text<"a">
-      component="a"
-      className={classes.link}
-      href={link.link}
-      key={link.label}
-      onClick={(event) => event.preventDefault()}
-    >
+    <Link key={link.label} className={classes.link} href={link.link}>
       {link.label}
-    </Text>
+    </Link>
   ));
 
   return (
