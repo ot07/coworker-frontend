@@ -12,8 +12,9 @@ const mockdata = [
     ],
   },
   {
-    label: "テーブル（工事中）",
+    label: "テーブル",
     icon: IconTable,
+    links: [{ label: "メンバー一覧", link: "/team-members" }],
   },
   { label: "カレンダー（工事中）", icon: IconCalendarStats },
 ];
