@@ -9,12 +9,13 @@ import {
   ActionIcon,
   Text,
   createStyles,
+  Badge,
 } from "@mantine/core";
 import { Header } from "@/components/Header/Header";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { DataTable } from "mantine-datatable";
 import { useState } from "react";
-import { IconEdit, IconTrash } from "@tabler/icons";
+import { IconEdit, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import dayjs from "dayjs";
 
 type Status = "active" | "offline";
@@ -69,6 +70,22 @@ const useStyles = createStyles((theme) => ({
   row: {
     color: theme.colors.gray[7],
   },
+  badgeTeal: {
+    border: 0,
+    backgroundColor: theme.colors.teal[0],
+    color: theme.colors.teal[8],
+    textTransform: "capitalize",
+    fontFamily: "initial",
+    padding: theme.spacing.xs,
+  },
+  badgeGray: {
+    border: 0,
+    backgroundColor: theme.colors.gray[2],
+    color: theme.colors.gray[8],
+    textTransform: "capitalize",
+    fontFamily: "initial",
+    padding: theme.spacing.xs,
+  },
 }));
 
 export default function TeamMembers() {
@@ -90,28 +107,67 @@ export default function TeamMembers() {
         },
       })}
     >
-      <Box mx="auto" className="max-w-[48rem]">
+      <Box mx="auto" className="max-w-[56rem]">
         <Title order={2} mt={8} mb={16}>
           メンバー一覧
         </Title>
+        <Group mb="sm" position="right">
+          <Button
+            leftIcon={<IconPlus size={16} />}
+            onClick={() => alert("工事中")}
+          >
+            データを追加
+          </Button>
+          <Button
+            leftIcon={<IconTrash size={16} />}
+            color="red"
+            disabled={!selectedRecords.length}
+            onClick={() => alert("工事中")}
+          >
+            選択したデータを削除
+          </Button>
+        </Group>
         <DataTable
-          minHeight={members.length > 0 ? 0 : 320}
+          minHeight={!members.length ? 320 : undefined}
           records={members}
           withBorder
           striped
           borderRadius="md"
           shadow="sm"
           horizontalSpacing="xl"
-          verticalSpacing="md"
+          verticalSpacing="xs"
           rowClassName={classes.row}
           columns={[
             { accessor: "name", title: "名前", width: "40%" },
-            { accessor: "status", title: "ステータス", width: "60%" },
-            { accessor: "email", title: "Eメールアドレス", width: 160 },
+            { accessor: "email", title: "Eメールアドレス", width: "60%" },
+            {
+              accessor: "status",
+              title: "ステータス",
+              width: 120,
+              render: ({ status }: Member) => {
+                return status === "active" ? (
+                  <Badge
+                    variant="dot"
+                    className={classes.badgeTeal}
+                    color="teal"
+                  >
+                    {status}
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="dot"
+                    className={classes.badgeGray}
+                    color="gray"
+                  >
+                    {status}
+                  </Badge>
+                );
+              },
+            },
             {
               accessor: "dateAdded",
               title: "追加日",
-              width: 96,
+              width: 120,
               render: (member: Member) =>
                 dayjs(member.dateAdded).format("YYYY/MM/DD"),
             },
@@ -119,14 +175,9 @@ export default function TeamMembers() {
               accessor: "actions",
               title: "",
               render: () => (
-                <Group spacing={3} position="right" noWrap>
-                  <ActionIcon color="blue">
-                    <IconEdit size={16} />
-                  </ActionIcon>
-                  <ActionIcon color="red">
-                    <IconTrash size={16} />
-                  </ActionIcon>
-                </Group>
+                <ActionIcon color="gray" onClick={() => alert("工事中")}>
+                  <IconPencil size={22} />
+                </ActionIcon>
               ),
             },
           ]}
@@ -134,25 +185,6 @@ export default function TeamMembers() {
           onSelectedRecordsChange={setSelectedRecords}
           noRecordsText="データがありません"
         />
-        <Paper my="xl" py="xl" withBorder radius={0}>
-          <Center>
-            <Button
-              uppercase
-              leftIcon={<IconTrash size={16} />}
-              color="red"
-              disabled={!selectedRecords.length}
-              onClick={() => alert("delete")}
-            >
-              {selectedRecords.length
-                ? `Delete ${
-                    selectedRecords.length === 1
-                      ? "one selected record"
-                      : `${selectedRecords.length} selected records`
-                  }`
-                : "Select records to delete"}
-            </Button>
-          </Center>
-        </Paper>
       </Box>
     </AppShell>
   );
