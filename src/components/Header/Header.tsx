@@ -14,7 +14,7 @@ export const Header = () => {
       <div className="flex h-full items-center justify-center">
         <div className="relative flex h-full w-full items-center justify-start">
           <Link href="/" className="bg-transparent p-2">
-            <Image src="logo.svg" alt="logo" width={64} height={0} />
+            <Image src="logo.svg" alt="logo" width={104} height={0} />
           </Link>
         </div>
         <div className="flex h-full w-full items-center justify-end">
