@@ -1,8 +1,8 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios from "axios";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
 // Axios middleware to convert all api responses to camelCase
-axios.interceptors.response.use((response: AxiosResponse) => {
+axios.interceptors.response.use((response) => {
   if (
     response.data &&
     response.headers["content-type"] === "application/json"
@@ -13,7 +13,7 @@ axios.interceptors.response.use((response: AxiosResponse) => {
 });
 
 // Axios middleware to convert all api requests to snake_case
-axios.interceptors.request.use((config: AxiosRequestConfig) => {
+axios.interceptors.request.use((config) => {
   const newConfig = { ...config };
   if (newConfig.headers?.["Content-Type"] === "multipart/form-data")
     return newConfig;
