@@ -6,14 +6,16 @@ export interface Member {
   fullName: string;
   email: string;
   status: Status;
+  dateAdded: Date;
 }
 
 const membersTranslator = (data: ListMembersResponse): Member[] =>
-  data.map(({ id, firstName, lastName, email, status }) => ({
+  data.map(({ id, firstName, lastName, email, status, createdAt }) => ({
     id,
     fullName: `${firstName} ${lastName}`,
     email,
     status,
+    dateAdded: new Date(createdAt),
   }));
 
 export const useListMembers = () => {

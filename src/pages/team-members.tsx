@@ -15,6 +15,7 @@ import { DataTable } from "mantine-datatable";
 import { useState } from "react";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { Member, useListMembers } from "@/components/TeamMembers/useMembers";
+import dayjs from "dayjs";
 
 const useStyles = createStyles((theme) => ({
   row: {
@@ -126,14 +127,13 @@ export default function TeamMembers() {
                     );
                   },
                 },
-                // TODO:
-                // {
-                //   accessor: "dateAdded",
-                //   title: "追加日",
-                //   width: 120,
-                //   render: (member: Member) =>
-                //     dayjs(member.dateAdded).format("YYYY/MM/DD"),
-                // },
+                {
+                  accessor: "dateAdded",
+                  title: "追加日",
+                  width: 120,
+                  render: (member: Member) =>
+                    dayjs(member.dateAdded).format("YYYY/MM/DD"),
+                },
                 {
                   accessor: "actions",
                   title: "",

@@ -9,6 +9,7 @@ export interface Member {
   lastName: string;
   email: string;
   status: Status;
+  createdAt: string;
 }
 
 export type ListMembersResponse = Member[];
