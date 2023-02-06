@@ -7,6 +7,7 @@ import {
   ActionIcon,
   createStyles,
   Badge,
+  Skeleton,
 } from "@mantine/core";
 import { Header } from "@/components/Header/Header";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
@@ -61,10 +62,15 @@ export default function TeamMembers() {
           メンバー一覧
         </Title>
 
-        {isLoading && <div>Loading...</div>}
+        <Skeleton visible={isLoading} />
 
-        {!!members && (
-          <>
+        <>
+          {isLoading && (
+            <Group mb="sm" position="right">
+              <Skeleton width="50%" height={36} />
+            </Group>
+          )}
+          {!isLoading && (
             <Group mb="sm" position="right">
               <Button
                 leftIcon={<IconPlus size={16} />}
@@ -81,8 +87,10 @@ export default function TeamMembers() {
                 選択したデータを削除
               </Button>
             </Group>
+          )}
+          <Skeleton visible={isLoading}>
             <DataTable
-              minHeight={!members.length ? 320 : undefined}
+              minHeight={!members || !members.length ? 320 : undefined}
               records={members}
               withBorder
               striped
@@ -140,8 +148,8 @@ export default function TeamMembers() {
               onSelectedRecordsChange={setSelectedMembers}
               noRecordsText="データがありません"
             />
-          </>
-        )}
+          </Skeleton>
+        </>
       </Box>
     </AppShell>
   );
