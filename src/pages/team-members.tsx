@@ -13,7 +13,7 @@ import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { DataTable } from "mantine-datatable";
 import { useState } from "react";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { Member, useListMembers } from "@/pages/team-members/useMembers";
+import { Member, useListMembers } from "@/components/TeamMembers/useMembers";
 
 const useStyles = createStyles((theme) => ({
   row: {
