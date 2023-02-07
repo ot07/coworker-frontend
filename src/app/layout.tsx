@@ -1,6 +1,7 @@
 import "./globals.css";
 import { ReactQueryWrapper } from "@/app/ReactQueryWrapper";
-import { CustomAxiosInterceptorsWrapper } from "@/app/CustomAxiosInterceptorsWrapper";
+import { CustomAxiosInterceptors } from "@/app/CustomAxiosInterceptors";
+import RootStyleRegistry from "./registry";
 
 export default function RootLayout({
   children,
@@ -11,9 +12,11 @@ export default function RootLayout({
     <html lang="en">
       <head />
       <body>
-        <CustomAxiosInterceptorsWrapper>
-          <ReactQueryWrapper>{children}</ReactQueryWrapper>
-        </CustomAxiosInterceptorsWrapper>
+        <CustomAxiosInterceptors />
+
+        <ReactQueryWrapper>
+          <RootStyleRegistry>{children}</RootStyleRegistry>
+        </ReactQueryWrapper>
       </body>
     </html>
   );
