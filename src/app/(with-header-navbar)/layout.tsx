@@ -1,9 +1,14 @@
-import { Header } from "@/components/Header/Header";
-import { Sidebar } from "@/components/Sidebar/Sidebar";
-import { AppShell } from "@mantine/core";
-import { AccountSettings } from "@/components/AccountSettings/AccountSettings";
+"use client";
 
-export default function AccountSettingsPage() {
+import { Header } from "./Header";
+import { Sidebar } from "./Sidebar";
+import { AppShell } from "@mantine/core";
+
+export default function WithHeaderNavbarLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <AppShell
       padding="md"
@@ -18,7 +23,7 @@ export default function AccountSettingsPage() {
         },
       })}
     >
-      <AccountSettings />
+      {children}
     </AppShell>
   );
 }

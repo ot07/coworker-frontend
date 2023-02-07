@@ -1,6 +1,6 @@
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { FormValues } from "./AccountSettings";
-import { NumberInput, TextInput } from "@mantine/core";
+import { TextInput } from "@mantine/core";
 import { FC } from "react";
 
 type Props = {

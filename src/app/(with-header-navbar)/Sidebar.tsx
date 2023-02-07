@@ -1,6 +1,6 @@
 import { Navbar, ScrollArea, createStyles } from "@mantine/core";
 import { IconCalendarStats, IconTable, IconUser } from "@tabler/icons";
-import { LinksGroup } from "../NavbarLinksGroup/NavbarLinksGroup";
+import { LinksGroup } from "@/components/NavbarLinksGroup/NavbarLinksGroup";
 
 const mockdata = [
   {

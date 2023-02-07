@@ -1,18 +1,10 @@
-import {
-  Box,
-  Button,
-  Group,
-  NumberInput,
-  Stepper,
-  TextInput,
-  Title,
-} from "@mantine/core";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { Button, Group, Stepper } from "@mantine/core";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AccountDetailForms } from "@/components/AccountSettings/AccountDetailForms";
-import { PersonalDetailForms } from "@/components/AccountSettings/PersonalDetailForms";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { AccountDetailForms } from "@/app/(with-header-navbar)/account-settings/AccountDetailForms";
+import { PersonalDetailForms } from "@/app/(with-header-navbar)/account-settings/PersonalDetailForms";
+import { SyntheticEvent, useState } from "react";
 
 export type FormValues = {
   name: string;
@@ -43,7 +35,7 @@ export const AccountSettings = () => {
     trigger,
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -79,35 +71,29 @@ export const AccountSettings = () => {
     alert(JSON.stringify(data, null, 4));
 
   return (
-    <Box mx="auto" className="max-w-[32rem]">
-      <Title order={2} mt={8} mb={16}>
-        アカウント設定
-      </Title>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stepper active={active} onStepClick={setActive} breakpoint="sm">
+        <Stepper.Step label="Account Details">
+          <AccountDetailForms control={control} errors={errors} />
+        </Stepper.Step>
+        <Stepper.Step label="Personal Details">
+          <PersonalDetailForms control={control} errors={errors} />
+        </Stepper.Step>
+        <Stepper.Step label="Confirm" />
+      </Stepper>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stepper active={active} onStepClick={setActive} breakpoint="sm">
-          <Stepper.Step label="Account Details">
-            <AccountDetailForms control={control} errors={errors} />
-          </Stepper.Step>
-          <Stepper.Step label="Personal Details">
-            <PersonalDetailForms control={control} errors={errors} />
-          </Stepper.Step>
-          <Stepper.Step label="Confirm" />
-        </Stepper>
-
-        <Group position="right" mt="xl">
-          {active > 0 && (
-            <Button variant="default" onClick={prevStep}>
-              戻る
-            </Button>
-          )}
-          {active < 2 ? (
-            <Button onClick={nextStep}>次へ</Button>
-          ) : (
-            <Button type="submit">保存</Button>
-          )}
-        </Group>
-      </form>
-    </Box>
+      <Group position="right" mt="xl">
+        {active > 0 && (
+          <Button variant="default" onClick={prevStep}>
+            戻る
+          </Button>
+        )}
+        {active < 2 ? (
+          <Button onClick={nextStep}>次へ</Button>
+        ) : (
+          <Button type="submit">保存</Button>
+        )}
+      </Group>
+    </form>
   );
 };
