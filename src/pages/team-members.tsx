@@ -43,6 +43,7 @@ export default function TeamMembers() {
   const { classes } = useStyles();
   const { members, isLoading } = useListMembers();
   const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
+  const [page, setPage] = useState(1);
 
   return (
     <AppShell
@@ -98,7 +99,7 @@ export default function TeamMembers() {
               borderRadius="md"
               shadow="sm"
               horizontalSpacing="xl"
-              verticalSpacing="xs"
+              verticalSpacing="sm"
               rowClassName={classes.row}
               columns={[
                 { accessor: "fullName", title: "名前", width: "40%" },
@@ -147,6 +148,10 @@ export default function TeamMembers() {
               selectedRecords={selectedMembers}
               onSelectedRecordsChange={setSelectedMembers}
               noRecordsText="データがありません"
+              totalRecords={5}
+              recordsPerPage={5}
+              page={page}
+              onPageChange={(p) => setPage(p)}
             />
           </Skeleton>
         </>
