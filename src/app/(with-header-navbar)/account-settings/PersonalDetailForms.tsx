@@ -1,7 +1,7 @@
 import { Control, Controller, FieldErrors } from "react-hook-form";
-import { FormValues } from "./AccountSettings";
 import { TextInput } from "@mantine/core";
 import { FC } from "react";
+import { FormValues } from "@/app/(with-header-navbar)/account-settings/types";
 
 type Props = {
   control: Control<FormValues, any>;

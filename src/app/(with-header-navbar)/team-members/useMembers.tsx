@@ -1,26 +1,33 @@
-import { useListMembersQuery } from "@/api/members/hooks";
-import { ListMembersResponse, Status } from "@/api/members/queryFn";
+import { useGetMembers as useGetMembersQuery } from "@/api/endpoints/members/members";
+import { ApiMemberResponse } from "@/api/model";
+import { AxiosResponse } from "axios";
+import { Camelized } from "humps";
 
 export interface Member {
   id: string;
   fullName: string;
   email: string;
-  status: Status;
   dateAdded: Date;
 }
 
-const membersTranslator = (data: ListMembersResponse): Member[] =>
-  data.map(({ id, firstName, lastName, email, status, createdAt }) => ({
-    id,
-    fullName: `${firstName} ${lastName}`,
-    email,
-    status,
-    dateAdded: new Date(createdAt),
-  }));
-
-export const useListMembers = () => {
-  const { data: members, isLoading } = useListMembersQuery<Member[]>({
-    select: membersTranslator,
+const transformer = (
+  response: AxiosResponse<Camelized<Required<ApiMemberResponse>>[], any>
+): Member[] => {
+  return response.data.map(({ id, firstName, lastName, email, createdAt }) => {
+    return {
+      id: id,
+      fullName: `${firstName} ${lastName}`,
+      email: email,
+      dateAdded: new Date(createdAt),
+    };
   });
-  return { members, isLoading };
+};
+
+export const useGetMembers = () => {
+  const { data: members } = useGetMembersQuery<Member[]>(
+    { page_id: 1, page_size: 5 },
+    { query: { select: transformer } }
+  );
+
+  return { members };
 };

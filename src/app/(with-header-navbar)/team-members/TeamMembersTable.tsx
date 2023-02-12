@@ -1,11 +1,11 @@
 "use client";
 
-import { ActionIcon, Badge, Button, createStyles, Group } from "@mantine/core";
+import { ActionIcon, Button, createStyles, Group } from "@mantine/core";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { DataTable } from "mantine-datatable";
 import {
   Member,
-  useListMembers,
+  useGetMembers,
 } from "@/app/(with-header-navbar)/team-members/useMembers";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -34,7 +34,7 @@ const useStyles = createStyles((theme) => ({
 
 export const TeamMembersTable = () => {
   const { classes } = useStyles();
-  const { members } = useListMembers();
+  const { members } = useGetMembers();
   const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
   const [page, setPage] = useState(1);
 
@@ -69,28 +69,12 @@ export const TeamMembersTable = () => {
         verticalSpacing="sm"
         rowClassName={classes.row}
         columns={[
-          { accessor: "fullName", title: "名前", width: "40%" },
-          { accessor: "email", title: "Eメールアドレス", width: "60%" },
-          {
-            accessor: "status",
-            title: "ステータス",
-            width: 120,
-            render: ({ status }: Member) => {
-              return status === "active" ? (
-                <Badge variant="dot" className={classes.badgeTeal} color="teal">
-                  {status}
-                </Badge>
-              ) : (
-                <Badge variant="dot" className={classes.badgeGray} color="gray">
-                  {status}
-                </Badge>
-              );
-            },
-          },
+          { accessor: "fullName", title: "名前", width: "50%" },
+          { accessor: "email", title: "Eメールアドレス", width: "50%" },
           {
             accessor: "dateAdded",
             title: "追加日",
-            width: 120,
+            width: 160,
             render: (member: Member) =>
               dayjs(member.dateAdded).format("YYYY/MM/DD"),
           },
