@@ -16,6 +16,8 @@ export const ReactQueryWrapper = ({ children }: Props) => {
           queries: {
             retry: false,
             refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
             suspense: true,
           },
         },
