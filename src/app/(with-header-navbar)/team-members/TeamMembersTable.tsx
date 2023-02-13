@@ -5,10 +5,11 @@ import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { DataTable } from "mantine-datatable";
 import {
   Member,
+  useDeleteMembers,
   useGetMembers,
 } from "@/app/(with-header-navbar)/team-members/useMembers";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const useStyles = createStyles((theme) => ({
   row: {
@@ -35,8 +36,15 @@ const useStyles = createStyles((theme) => ({
 export const TeamMembersTable = () => {
   const { classes } = useStyles();
   const { members } = useGetMembers();
+  const { deleteMembers } = useDeleteMembers();
   const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
   const [page, setPage] = useState(1);
+
+  const deleteSelectedMembers = useCallback(() => {
+    const ids = selectedMembers.map((member) => member.id);
+    deleteMembers(ids);
+    setSelectedMembers([]);
+  }, [selectedMembers, deleteMembers]);
 
   return (
     <>
@@ -52,7 +60,7 @@ export const TeamMembersTable = () => {
             leftIcon={<IconTrash size={16} />}
             color="red"
             disabled={!selectedMembers.length}
-            onClick={() => alert("工事中")}
+            onClick={deleteSelectedMembers}
           >
             選択したデータを削除
           </Button>

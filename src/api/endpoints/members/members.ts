@@ -14,8 +14,9 @@ import type {
   QueryKey,
 } from "@tanstack/react-query";
 import type {
-  ApiMemberResponse,
   ApiErrorResponse,
+  DeleteMembersParams,
+  ApiMemberResponse,
   GetMembersParams,
   ApiCreateMemberRequest,
   ApiUpdateMemberRequestBody,
@@ -31,6 +32,55 @@ type SecondParameter<T extends (...args: any) => any> = T extends (
   ? P
   : never;
 
+/**
+ * @summary Delete members
+ */
+export const deleteMembers = (
+  params: DeleteMembersParams,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<void>(
+    { url: `/members`, method: "delete", params },
+    options
+  );
+};
+
+export type DeleteMembersMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMembers>>
+>;
+
+export type DeleteMembersMutationError = ErrorType<ApiErrorResponse>;
+
+export const useDeleteMembers = <
+  TError = ErrorType<ApiErrorResponse>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMembers>>,
+    TError,
+    { params: DeleteMembersParams },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMembers>>,
+    { params: DeleteMembersParams }
+  > = (props) => {
+    const { params } = props ?? {};
+
+    return deleteMembers(params, requestOptions);
+  };
+
+  return useMutation<
+    Awaited<ReturnType<typeof deleteMembers>>,
+    TError,
+    { params: DeleteMembersParams },
+    TContext
+  >(mutationFn, mutationOptions);
+};
 /**
  * @summary List members
  */

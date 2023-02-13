@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
-import {Camelized, camelizeKeys, Decamelized, decamelizeKeys} from "humps";
+import { Camelized, camelizeKeys, Decamelized, decamelizeKeys } from "humps";
 
 export const AXIOS_INSTANCE = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -49,4 +49,6 @@ export const customInstance = <T>(
 export type ErrorType<Error> = AxiosError<Error>;
 // // In case you want to wrap the body type (optional)
 // // (if the custom instance is processing data before sending it, like changing the case for example)
-export type BodyType<BodyData> = BodyData extends Array<infer Item> ? Decamelized<Item>[] : Decamelized<BodyData>;
+export type BodyType<BodyData> = BodyData extends Array<infer Item>
+  ? Decamelized<Item>[]
+  : Decamelized<BodyData>;
