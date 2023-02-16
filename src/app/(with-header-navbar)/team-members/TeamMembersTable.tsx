@@ -16,6 +16,7 @@ import {
 } from "@/app/(with-header-navbar)/team-members/useMembers";
 import dayjs from "dayjs";
 import { useCallback, useState } from "react";
+import { CreateMemberModal } from "@/app/(with-header-navbar)/team-members/CreateMemberModal";
 
 const useStyles = createStyles((theme) => ({
   row: {
@@ -40,11 +41,16 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export const TeamMembersTable = () => {
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
   const { classes } = useStyles();
   const { data: members, isLoading } = useGetMembers();
   const { deleteMembers } = useDeleteMembers();
   const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
   const [page, setPage] = useState(1);
+
+  const openModal = useCallback(() => {
+    setIsOpenCreateModal(true);
+  }, [setIsOpenCreateModal]);
 
   const deleteSelectedMembers = useCallback(() => {
     const ids = selectedMembers.map((member) => member.id);
@@ -60,10 +66,7 @@ export const TeamMembersTable = () => {
             <Skeleton width="50%" height={36} />
           ) : (
             <>
-              <Button
-                leftIcon={<IconPlus size={16} />}
-                onClick={() => alert("工事中")}
-              >
+              <Button leftIcon={<IconPlus size={16} />} onClick={openModal}>
                 データを追加
               </Button>
               <Button
@@ -120,6 +123,10 @@ export const TeamMembersTable = () => {
           onPageChange={(p) => setPage(p)}
         />
       )}
+      <CreateMemberModal
+        isOpen={isOpenCreateModal}
+        setIsOpen={setIsOpenCreateModal}
+      />
     </>
   );
 };
