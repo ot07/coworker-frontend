@@ -1,3 +1,5 @@
+"use client";
+
 import {
   getGetMembersQueryKey,
   useGetMembers as useGetMembersQuery,
@@ -30,12 +32,10 @@ const transformer = (
 };
 
 export const useGetMembers = () => {
-  const { data: members } = useGetMembersQuery<Member[]>(
+  return useGetMembersQuery<Member[]>(
     { page_id: 1, page_size: 5 },
     { query: { select: transformer } }
   );
-
-  return { members };
 };
 
 export const useDeleteMembers = () => {

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { SyntheticEvent, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Group, Stepper } from "@mantine/core";
+import { Box, Button, Group, Stepper, Title } from "@mantine/core";
 import { AccountDetailForms } from "@/app/(with-header-navbar)/account-settings/AccountDetailForms";
 import { PersonalDetailForms } from "@/app/(with-header-navbar)/account-settings/PersonalDetailForms";
 import { FormValues } from "@/app/(with-header-navbar)/account-settings/types";
@@ -66,30 +66,38 @@ export default function AccountSettings() {
     alert(JSON.stringify(data, null, 4));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Stepper active={active} onStepClick={setActive} breakpoint="sm">
-        <Stepper.Step label="Account Details" />
-        <Stepper.Step label="Personal Details"></Stepper.Step>
-        <Stepper.Step label="Confirm" />
-      </Stepper>
+    <Box mx="auto" className="max-w-[32rem]">
+      <Title order={2} mt={8} mb={16}>
+        アカウント設定
+      </Title>
 
-      {active === 0 && <AccountDetailForms control={control} errors={errors} />}
-      {active === 1 && (
-        <PersonalDetailForms control={control} errors={errors} />
-      )}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Stepper active={active} onStepClick={setActive} breakpoint="sm">
+          <Stepper.Step label="Account Details" />
+          <Stepper.Step label="Personal Details"></Stepper.Step>
+          <Stepper.Step label="Confirm" />
+        </Stepper>
 
-      <Group position="right" mt="xl">
-        {active > 0 && (
-          <Button variant="default" onClick={prevStep}>
-            戻る
-          </Button>
+        {active === 0 && (
+          <AccountDetailForms control={control} errors={errors} />
         )}
-        {active < 2 ? (
-          <Button onClick={nextStep}>次へ</Button>
-        ) : (
-          <Button type="submit">保存</Button>
+        {active === 1 && (
+          <PersonalDetailForms control={control} errors={errors} />
         )}
-      </Group>
-    </form>
+
+        <Group position="right" mt="xl">
+          {active > 0 && (
+            <Button variant="default" onClick={prevStep}>
+              戻る
+            </Button>
+          )}
+          {active < 2 ? (
+            <Button onClick={nextStep}>次へ</Button>
+          ) : (
+            <Button type="submit">保存</Button>
+          )}
+        </Group>
+      </form>
+    </Box>
   );
 }
