@@ -16,8 +16,9 @@ import type {
 import type {
   ApiErrorResponse,
   DeleteMembersParams,
-  ApiMemberResponse,
+  ApiListMembersResponse,
   GetMembersParams,
+  ApiMemberResponse,
   ApiCreateMemberRequest,
   ApiUpdateMemberRequestBody,
 } from "../../model";
@@ -89,7 +90,7 @@ export const getMembers = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<ApiMemberResponse[]>(
+  return customInstance<ApiListMembersResponse>(
     { url: `/members`, method: "get", params, signal },
     options
   );

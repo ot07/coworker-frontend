@@ -43,7 +43,7 @@ const useStyles = createStyles((theme) => ({
 export const TeamMembersTable = () => {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
   const { classes } = useStyles();
-  const { data: members, isLoading } = useGetMembers();
+  const { data, isLoading } = useGetMembers();
   const { deleteMembers } = useDeleteMembers();
   const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
   const [page, setPage] = useState(1);
@@ -85,8 +85,8 @@ export const TeamMembersTable = () => {
         <Skeleton height={360} />
       ) : (
         <DataTable
-          minHeight={!members || !members.length ? 320 : undefined}
-          records={members}
+          minHeight={!data?.data || !data.data.length ? 320 : undefined}
+          records={data?.data}
           withBorder
           striped
           borderRadius="md"

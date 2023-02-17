@@ -6,11 +6,16 @@ import {
 } from "@/api/endpoints/members/members";
 import { useDeleteMembers as useDeleteMembersMutation } from "@/api/endpoints/members/members";
 import { usePostMembers as usePostMemberMutation } from "@/api/endpoints/members/members";
-import { ApiCreateMemberRequest, ApiMemberResponse } from "@/api/model";
+import {
+  ApiCreateMemberRequest,
+  ApiListMembersResponse,
+  ApiListMembersResponseMeta,
+} from "@/api/model";
 import { AxiosResponse } from "axios";
 import { Camelized, Decamelized } from "humps";
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { DeepRequired } from "ts-essentials";
 
 export interface Member {
   id: string;
@@ -19,21 +24,31 @@ export interface Member {
   dateAdded: Date;
 }
 
+export interface QueryResultData {
+  meta: Camelized<Required<ApiListMembersResponseMeta>>;
+  data: Member[];
+}
+
 const transformer = (
-  response: AxiosResponse<Camelized<Required<ApiMemberResponse>>[], any>
-): Member[] => {
-  return response.data.map(({ id, firstName, lastName, email, createdAt }) => {
-    return {
-      id: id,
-      fullName: `${firstName} ${lastName}`,
-      email: email,
-      dateAdded: new Date(createdAt),
-    };
-  });
+  response: AxiosResponse<Camelized<DeepRequired<ApiListMembersResponse>>, any>
+): QueryResultData => {
+  return {
+    meta: response.data.meta,
+    data: response.data.data.map(
+      ({ id, firstName, lastName, email, createdAt }) => {
+        return {
+          id: id,
+          fullName: `${firstName} ${lastName}`,
+          email: email,
+          dateAdded: new Date(createdAt),
+        };
+      }
+    ),
+  };
 };
 
 export const useGetMembers = () => {
-  return useGetMembersQuery<Member[]>(
+  return useGetMembersQuery<QueryResultData>(
     { page_id: 1, page_size: 5 },
     { query: { select: transformer } }
   );

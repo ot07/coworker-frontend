@@ -1,5 +1,6 @@
 import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
-import { Camelized, camelizeKeys, Decamelized, decamelizeKeys } from "humps";
+import { Camelized, camelizeKeys, decamelizeKeys } from "humps";
+import { DeepRequired } from "ts-essentials";
 
 export const AXIOS_INSTANCE = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -34,14 +35,7 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 export const customInstance = <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig
-): Promise<
-  AxiosResponse<
-    T extends Array<infer Item>
-      ? Camelized<Required<Item>>[]
-      : Camelized<Required<T>>,
-    any
-  >
-> => {
+): Promise<AxiosResponse<Camelized<DeepRequired<T>>, any>> => {
   return AXIOS_INSTANCE.request({ ...config, ...options });
 };
 
@@ -49,6 +43,4 @@ export const customInstance = <T>(
 export type ErrorType<Error> = AxiosError<Error>;
 // // In case you want to wrap the body type (optional)
 // // (if the custom instance is processing data before sending it, like changing the case for example)
-export type BodyType<BodyData> = BodyData extends Array<infer Item>
-  ? Camelized<Item>[]
-  : Camelized<BodyData>;
+export type BodyType<BodyData> = Camelized<BodyData>;
