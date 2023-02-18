@@ -47,9 +47,9 @@ const transformer = (
   };
 };
 
-export const useGetMembers = () => {
+export const useGetMembers = (page: number, pageSize: number) => {
   return useGetMembersQuery<QueryResultData>(
-    { page_id: 1, page_size: 5 },
+    { page_id: page, page_size: pageSize },
     { query: { select: transformer } }
   );
 };
@@ -77,12 +77,15 @@ export const useCreateMember = () => {
   return { createMember };
 };
 
-export const useDeleteMembers = () => {
+export const useDeleteMembers = (page: number, pageSize: number) => {
   const queryClient = useQueryClient();
   const mutation = useDeleteMembersMutation({
     mutation: {
       onSuccess: () => {
-        const queryKey = getGetMembersQueryKey({ page_id: 1, page_size: 5 });
+        const queryKey = getGetMembersQueryKey({
+          page_id: page,
+          page_size: pageSize,
+        });
         queryClient.invalidateQueries(queryKey);
       },
     },

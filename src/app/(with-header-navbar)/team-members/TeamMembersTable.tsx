@@ -15,7 +15,7 @@ import {
   useGetMembers,
 } from "@/app/(with-header-navbar)/team-members/useMembers";
 import dayjs from "dayjs";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CreateMemberModal } from "@/app/(with-header-navbar)/team-members/CreateMemberModal";
 
 const useStyles = createStyles((theme) => ({
@@ -41,12 +41,13 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export const TeamMembersTable = () => {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
   const { classes } = useStyles();
-  const { data, isLoading } = useGetMembers();
-  const { deleteMembers } = useDeleteMembers();
+  const { data, isLoading, refetch } = useGetMembers(page, pageSize);
+  const { deleteMembers } = useDeleteMembers(page, pageSize);
   const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
-  const [page, setPage] = useState(1);
 
   const openModal = useCallback(() => {
     setIsOpenCreateModal(true);
@@ -57,6 +58,11 @@ export const TeamMembersTable = () => {
     deleteMembers(ids);
     setSelectedMembers([]);
   }, [selectedMembers, deleteMembers]);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize]);
 
   return (
     <>
@@ -117,8 +123,8 @@ export const TeamMembersTable = () => {
           selectedRecords={selectedMembers}
           onSelectedRecordsChange={setSelectedMembers}
           noRecordsText="データがありません"
-          totalRecords={5}
-          recordsPerPage={5}
+          totalRecords={data?.meta.totalCount || 0}
+          recordsPerPage={data?.meta.pageSize || 0}
           page={page}
           onPageChange={(p) => setPage(p)}
         />
