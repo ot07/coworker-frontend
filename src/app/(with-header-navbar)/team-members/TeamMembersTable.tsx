@@ -11,11 +11,12 @@ import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { DataTable } from "mantine-datatable";
 import {
   Member,
+  useCreateMember,
   useDeleteMembers,
   useGetMembers,
 } from "@/app/(with-header-navbar)/team-members/useMembers";
 import dayjs from "dayjs";
-import { useCallback, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { CreateMemberModal } from "@/app/(with-header-navbar)/team-members/CreateMemberModal";
 
 const useStyles = createStyles((theme) => ({
@@ -41,12 +42,14 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export const TeamMembersTable = () => {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
   const { classes } = useStyles();
-  const { data, isLoading } = useGetMembers();
-  const { deleteMembers } = useDeleteMembers();
+  const { data, isLoading } = useGetMembers(page, pageSize);
+  const { createMember } = useCreateMember(page, pageSize);
+  const { deleteMembers } = useDeleteMembers(page, pageSize);
   const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
-  const [page, setPage] = useState(1);
 
   const openModal = useCallback(() => {
     setIsOpenCreateModal(true);
@@ -57,6 +60,12 @@ export const TeamMembersTable = () => {
     deleteMembers(ids);
     setSelectedMembers([]);
   }, [selectedMembers, deleteMembers]);
+
+  useLayoutEffect(() => {
+    if (data !== undefined && page > data.meta.pageCount) {
+      setPage(data.meta.pageCount);
+    }
+  }, [page, data]);
 
   return (
     <>
@@ -117,8 +126,8 @@ export const TeamMembersTable = () => {
           selectedRecords={selectedMembers}
           onSelectedRecordsChange={setSelectedMembers}
           noRecordsText="データがありません"
-          totalRecords={5}
-          recordsPerPage={5}
+          totalRecords={data?.meta.totalCount || 0}
+          recordsPerPage={data?.meta.pageSize || 0}
           page={page}
           onPageChange={(p) => setPage(p)}
         />
@@ -126,6 +135,7 @@ export const TeamMembersTable = () => {
       <CreateMemberModal
         isOpen={isOpenCreateModal}
         setIsOpen={setIsOpenCreateModal}
+        createMember={createMember}
       />
     </>
   );

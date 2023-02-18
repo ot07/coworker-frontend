@@ -12,7 +12,7 @@ import {
   ApiListMembersResponseMeta,
 } from "@/api/model";
 import { AxiosResponse } from "axios";
-import { Camelized, Decamelized } from "humps";
+import { Camelized } from "humps";
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { DeepRequired } from "ts-essentials";
@@ -47,19 +47,22 @@ const transformer = (
   };
 };
 
-export const useGetMembers = () => {
+export const useGetMembers = (page: number, pageSize: number) => {
   return useGetMembersQuery<QueryResultData>(
-    { page_id: 1, page_size: 5 },
-    { query: { select: transformer } }
+    { page_id: page, page_size: pageSize },
+    { query: { select: transformer, keepPreviousData: true } }
   );
 };
 
-export const useCreateMember = () => {
+export const useCreateMember = (page: number, pageSize: number) => {
   const queryClient = useQueryClient();
   const mutation = usePostMemberMutation({
     mutation: {
       onSuccess: () => {
-        const queryKey = getGetMembersQueryKey({ page_id: 1, page_size: 5 });
+        const queryKey = getGetMembersQueryKey({
+          page_id: page,
+          page_size: pageSize,
+        });
         queryClient.invalidateQueries(queryKey);
       },
     },
@@ -77,12 +80,15 @@ export const useCreateMember = () => {
   return { createMember };
 };
 
-export const useDeleteMembers = () => {
+export const useDeleteMembers = (page: number, pageSize: number) => {
   const queryClient = useQueryClient();
   const mutation = useDeleteMembersMutation({
     mutation: {
       onSuccess: () => {
-        const queryKey = getGetMembersQueryKey({ page_id: 1, page_size: 5 });
+        const queryKey = getGetMembersQueryKey({
+          page_id: page,
+          page_size: pageSize,
+        });
         queryClient.invalidateQueries(queryKey);
       },
     },
