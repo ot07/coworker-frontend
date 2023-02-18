@@ -1,16 +1,18 @@
 "use client";
 
 import { Dispatch, FC, SetStateAction, useCallback } from "react";
-import { Button, Group, Modal, NumberInput, TextInput } from "@mantine/core";
+import { Button, Group, Modal, TextInput } from "@mantine/core";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useCreateMember } from "@/app/(with-header-navbar)/team-members/useMembers";
 import { v4 as uuidv4 } from "uuid";
+import { ApiCreateMemberRequest } from "@/api/model";
+import { Camelized } from "humps";
 
 type Props = {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  createMember: (data: Camelized<ApiCreateMemberRequest>) => void;
 };
 
 const schema = z.object({
@@ -29,11 +31,13 @@ type FormValues = {
   email?: string;
 };
 
-export const CreateMemberModal: FC<Props> = ({ isOpen, setIsOpen }) => {
+export const CreateMemberModal: FC<Props> = ({
+  isOpen,
+  setIsOpen,
+  createMember,
+}) => {
   const id = uuidv4();
-  const { createMember } = useCreateMember();
   const {
-    trigger,
     control,
     handleSubmit,
     reset,

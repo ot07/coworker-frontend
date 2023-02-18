@@ -11,6 +11,7 @@ import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { DataTable } from "mantine-datatable";
 import {
   Member,
+  useCreateMember,
   useDeleteMembers,
   useGetMembers,
 } from "@/app/(with-header-navbar)/team-members/useMembers";
@@ -45,7 +46,8 @@ export const TeamMembersTable = () => {
   const [pageSize, setPageSize] = useState(5);
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
   const { classes } = useStyles();
-  const { data, isLoading, refetch } = useGetMembers(page, pageSize);
+  const { data, isLoading } = useGetMembers(page, pageSize);
+  const { createMember } = useCreateMember(page, pageSize);
   const { deleteMembers } = useDeleteMembers(page, pageSize);
   const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
 
@@ -58,11 +60,6 @@ export const TeamMembersTable = () => {
     deleteMembers(ids);
     setSelectedMembers([]);
   }, [selectedMembers, deleteMembers]);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, pageSize]);
 
   return (
     <>
@@ -132,6 +129,7 @@ export const TeamMembersTable = () => {
       <CreateMemberModal
         isOpen={isOpenCreateModal}
         setIsOpen={setIsOpenCreateModal}
+        createMember={createMember}
       />
     </>
   );
