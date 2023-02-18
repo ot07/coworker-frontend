@@ -16,7 +16,7 @@ import {
   useGetMembers,
 } from "@/app/(with-header-navbar)/team-members/useMembers";
 import dayjs from "dayjs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { CreateMemberModal } from "@/app/(with-header-navbar)/team-members/CreateMemberModal";
 
 const useStyles = createStyles((theme) => ({
@@ -60,6 +60,12 @@ export const TeamMembersTable = () => {
     deleteMembers(ids);
     setSelectedMembers([]);
   }, [selectedMembers, deleteMembers]);
+
+  useLayoutEffect(() => {
+    if (data !== undefined && page > data.meta.pageCount) {
+      setPage(data.meta.pageCount);
+    }
+  }, [page, data]);
 
   return (
     <>
