@@ -1,5 +1,3 @@
-"use client";
-
 import {
   TextInput,
   PasswordInput,
@@ -9,14 +7,14 @@ import {
   Group,
   Button,
   Center,
-} from "@mantine/core";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+} from '@mantine/core'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 export default function Login() {
-  const router = useRouter();
+  const router = useRouter()
 
-  const login = () => router.push("/");
+  const login = () => router.push('/')
 
   return (
     <Container className="flex h-screen items-center justify-center overflow-hidden">
@@ -34,5 +32,5 @@ export default function Login() {
         </Button>
       </Paper>
     </Container>
-  );
+  )
 }

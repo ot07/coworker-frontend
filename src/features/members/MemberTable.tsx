@@ -1,23 +1,21 @@
-"use client";
-
 import {
   ActionIcon,
   Button,
   createStyles,
   Group,
   Skeleton,
-} from "@mantine/core";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { DataTable } from "mantine-datatable";
+} from '@mantine/core'
+import { IconPencil, IconPlus, IconTrash } from '@tabler/icons'
+import { DataTable } from 'mantine-datatable'
+import dayjs from 'dayjs'
+import { useCallback, useLayoutEffect, useState } from 'react'
 import {
   Member,
   useCreateMember,
   useDeleteMembers,
   useGetMembers,
-} from "@/app/(with-header-navbar)/team-members/useMembers";
-import dayjs from "dayjs";
-import { useCallback, useLayoutEffect, useState } from "react";
-import { CreateMemberModal } from "@/app/(with-header-navbar)/team-members/CreateMemberModal";
+} from './useMembers'
+import { CreateModal } from './CreateModal'
 
 const useStyles = createStyles((theme) => ({
   row: {
@@ -27,45 +25,45 @@ const useStyles = createStyles((theme) => ({
     border: 0,
     backgroundColor: theme.colors.teal[0],
     color: theme.colors.teal[8],
-    textTransform: "capitalize",
-    fontFamily: "initial",
+    textTransform: 'capitalize',
+    fontFamily: 'initial',
     padding: theme.spacing.xs,
   },
   badgeGray: {
     border: 0,
     backgroundColor: theme.colors.gray[2],
     color: theme.colors.gray[8],
-    textTransform: "capitalize",
-    fontFamily: "initial",
+    textTransform: 'capitalize',
+    fontFamily: 'initial',
     padding: theme.spacing.xs,
   },
-}));
+}))
 
-export const TeamMembersTable = () => {
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
-  const { classes } = useStyles();
-  const { data, isLoading } = useGetMembers(page, pageSize);
-  const { createMember } = useCreateMember(page, pageSize);
-  const { deleteMembers } = useDeleteMembers(page, pageSize);
-  const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
+export const MembersTable = () => {
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(5)
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
+  const { classes } = useStyles()
+  const { data, isLoading } = useGetMembers(page, pageSize)
+  const { createMember } = useCreateMember(page, pageSize)
+  const { deleteMembers } = useDeleteMembers(page, pageSize)
+  const [selectedMembers, setSelectedMembers] = useState<Member[]>([])
 
   const openModal = useCallback(() => {
-    setIsOpenCreateModal(true);
-  }, [setIsOpenCreateModal]);
+    setIsOpenCreateModal(true)
+  }, [setIsOpenCreateModal])
 
   const deleteSelectedMembers = useCallback(() => {
-    const ids = selectedMembers.map((member) => member.id);
-    deleteMembers(ids);
-    setSelectedMembers([]);
-  }, [selectedMembers, deleteMembers]);
+    const ids = selectedMembers.map((member) => member.id)
+    deleteMembers(ids)
+    setSelectedMembers([])
+  }, [selectedMembers, deleteMembers])
 
   useLayoutEffect(() => {
     if (data !== undefined && page > data.meta.pageCount) {
-      setPage(data.meta.pageCount);
+      setPage(data.meta.pageCount)
     }
-  }, [page, data]);
+  }, [page, data])
 
   return (
     <>
@@ -104,20 +102,20 @@ export const TeamMembersTable = () => {
           verticalSpacing="sm"
           rowClassName={classes.row}
           columns={[
-            { accessor: "fullName", title: "名前", width: "50%" },
-            { accessor: "email", title: "Eメールアドレス", width: "50%" },
+            { accessor: 'fullName', title: '名前', width: '50%' },
+            { accessor: 'email', title: 'Eメールアドレス', width: '50%' },
             {
-              accessor: "dateAdded",
-              title: "追加日",
+              accessor: 'dateAdded',
+              title: '追加日',
               width: 160,
               render: (member: Member) =>
-                dayjs(member.dateAdded).format("YYYY/MM/DD"),
+                dayjs(member.dateAdded).format('YYYY/MM/DD'),
             },
             {
-              accessor: "actions",
-              title: "",
+              accessor: 'actions',
+              title: '',
               render: () => (
-                <ActionIcon color="gray" onClick={() => alert("工事中")}>
+                <ActionIcon color="gray" onClick={() => alert('工事中')}>
                   <IconPencil size={22} />
                 </ActionIcon>
               ),
@@ -132,11 +130,11 @@ export const TeamMembersTable = () => {
           onPageChange={(p) => setPage(p)}
         />
       )}
-      <CreateMemberModal
+      <CreateModal
         isOpen={isOpenCreateModal}
         setIsOpen={setIsOpenCreateModal}
         createMember={createMember}
       />
     </>
-  );
-};
+  )
+}
