@@ -1,12 +1,12 @@
-import { Control, Controller, FieldErrors } from "react-hook-form";
-import { TextInput } from "@mantine/core";
-import { FC } from "react";
-import { FormValues } from "@/app/(with-header-navbar)/account-settings/types";
+import { Control, Controller, FieldErrors } from 'react-hook-form'
+import { TextInput } from '@mantine/core'
+import { FC } from 'react'
+import { FormValues } from '@/features/account-settings/types'
 
 type Props = {
-  control: Control<FormValues, any>;
-  errors: FieldErrors<FormValues>;
-};
+  control: Control<FormValues, any>
+  errors: FieldErrors<FormValues>
+}
 
 export const PersonalDetailForms: FC<Props> = ({ control, errors }) => {
   return (
@@ -38,5 +38,5 @@ export const PersonalDetailForms: FC<Props> = ({ control, errors }) => {
         )}
       />
     </>
-  );
-};
+  )
+}
