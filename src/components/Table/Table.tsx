@@ -23,6 +23,12 @@ const useStyles = createStyles((theme) => ({
     padding: '0 !important',
   },
 
+  checkbox: {
+    input: {
+      cursor: 'pointer',
+    },
+  },
+
   control: {
     width: '100%',
     padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
@@ -76,7 +82,11 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
     : IconSelector
   return (
     <th className={classes.th}>
-      <UnstyledButton onClick={onSort} className={classes.control}>
+      <UnstyledButton
+        onClick={onSort}
+        className={classes.control}
+        tabIndex={-1}
+      >
         <Group position="apart">
           <Text weight={500} size="sm">
             {children}
@@ -129,9 +139,16 @@ export function Table({ data }: TableProps) {
 
   const setSorting = (field: keyof RowData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false
-    setReverseSortDirection(reversed)
-    setSortBy(field)
-    setSortedData(sortData(data, { sortBy: field, reversed, search }))
+
+    if (!reversed && sortBy === field) {
+      setReverseSortDirection(false)
+      setSortBy(null)
+      setSortedData(sortData(data, { sortBy: null, reversed: false, search }))
+    } else {
+      setReverseSortDirection(reversed)
+      setSortBy(field)
+      setSortedData(sortData(data, { sortBy: field, reversed, search }))
+    }
   }
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -159,6 +176,7 @@ export function Table({ data }: TableProps) {
       <tr key={row.id} className={cx({ [classes.rowSelected]: selected })}>
         <td>
           <Checkbox
+            className={classes.checkbox}
             checked={selection.includes(row.id)}
             onChange={() => toggleRow(row.id)}
             transitionDuration={0}
@@ -189,6 +207,7 @@ export function Table({ data }: TableProps) {
           <tr>
             <th style={{ width: 40 }}>
               <Checkbox
+                className={classes.checkbox}
                 onChange={toggleAll}
                 checked={selection.length === data.length}
                 indeterminate={
