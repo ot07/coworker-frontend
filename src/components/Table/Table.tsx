@@ -9,6 +9,9 @@ import {
   Center,
   TextInput,
   Checkbox,
+  Button,
+  Flex,
+  Popover,
 } from '@mantine/core'
 import { keys } from '@mantine/utils'
 import {
@@ -16,7 +19,11 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconSearch,
+  IconGripVertical,
 } from '@tabler/icons'
+import { useListState } from '@mantine/hooks'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import { SortableList } from '@/components/Table/SortableList'
 
 const useStyles = createStyles((theme) => ({
   th: {
@@ -52,6 +59,44 @@ const useStyles = createStyles((theme) => ({
       theme.colorScheme === 'dark'
         ? theme.fn.rgba(theme.colors[theme.primaryColor][7], 0.2)
         : theme.colors[theme.primaryColor][0],
+  },
+
+  item: {
+    display: 'flex',
+    alignItems: 'center',
+    borderRadius: theme.radius.md,
+    border: `1px solid ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]
+    }`,
+    padding: `${theme.spacing.sm}px ${theme.spacing.xl}px`,
+    paddingLeft: theme.spacing.xl - theme.spacing.md, // to offset drag handle
+    backgroundColor:
+      theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.white,
+    marginBottom: theme.spacing.sm,
+  },
+
+  itemDragging: {
+    boxShadow: theme.shadows.sm,
+  },
+
+  symbol: {
+    fontSize: 30,
+    fontWeight: 700,
+    width: 60,
+  },
+
+  dragHandle: {
+    ...theme.fn.focusStyles(),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    color:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[1]
+        : theme.colors.gray[6],
+    paddingLeft: theme.spacing.md,
+    paddingRight: theme.spacing.md,
   },
 }))
 
@@ -129,6 +174,97 @@ function sortData(
   )
 }
 
+interface SelectColumnsMenuProps {
+  data: {
+    position: number
+    mass: number
+    symbol: string
+    name: string
+  }[]
+}
+
+const columns = {
+  data: [
+    {
+      position: 6,
+      mass: 12.011,
+      symbol: 'C',
+      name: 'Carbon',
+    },
+    {
+      position: 7,
+      mass: 14.007,
+      symbol: 'N',
+      name: 'Nitrogen',
+    },
+    {
+      position: 39,
+      mass: 88.906,
+      symbol: 'Y',
+      name: 'Yttrium',
+    },
+    {
+      position: 56,
+      mass: 137.33,
+      symbol: 'Ba',
+      name: 'Barium',
+    },
+    {
+      position: 58,
+      mass: 140.12,
+      symbol: 'Ce',
+      name: 'Cerium',
+    },
+  ],
+}
+
+function SelectColumnsMenu() {
+  const { classes, cx } = useStyles()
+  const [state, handlers] = useListState(columns.data)
+
+  const items = state.map((item, index) => (
+    <Draggable key={item.symbol} index={index} draggableId={item.symbol}>
+      {(provided, snapshot) => (
+        <div
+          className={cx(classes.item, {
+            [classes.itemDragging]: snapshot.isDragging,
+          })}
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+        >
+          <div {...provided.dragHandleProps} className={classes.dragHandle}>
+            <IconGripVertical size={18} stroke={1.5} />
+          </div>
+          <Text className={classes.symbol}>{item.symbol}</Text>
+          <div>
+            <Text>{item.name}</Text>
+            <Text color="dimmed" size="sm">
+              Position: {item.position} • Mass: {item.mass}
+            </Text>
+          </div>
+        </div>
+      )}
+    </Draggable>
+  ))
+
+  return (
+    <DragDropContext
+      onDragEnd={({ destination, source }) =>
+        handlers.reorder({ from: source.index, to: destination?.index || 0 })
+      }
+    >
+      <Droppable droppableId="dnd-list" direction="vertical">
+        {(provided) => (
+          <div {...provided.droppableProps} ref={provided.innerRef}>
+            {items}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
+  )
+}
+
 export function Table({ data }: TableProps) {
   const { classes, cx } = useStyles()
   const [search, setSearch] = useState('')
@@ -190,69 +326,81 @@ export function Table({ data }: TableProps) {
   })
 
   return (
-    <ScrollArea>
-      <TextInput
-        placeholder="Search by any field"
-        mb="md"
-        icon={<IconSearch size={14} stroke={1.5} />}
-        value={search}
-        onChange={handleSearchChange}
-      />
-      <MantineTable
-        horizontalSpacing="md"
-        verticalSpacing="xs"
-        sx={{ tableLayout: 'fixed', minWidth: 700 }}
-      >
-        <thead>
-          <tr>
-            <th style={{ width: 40 }}>
-              <Checkbox
-                className={classes.checkbox}
-                onChange={toggleAll}
-                checked={selection.length === data.length}
-                indeterminate={
-                  selection.length > 0 && selection.length !== data.length
-                }
-                transitionDuration={0}
-              />
-            </th>
-            <Th
-              sorted={sortBy === 'name'}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting('name')}
-            >
-              名前
-            </Th>
-            <Th
-              sorted={sortBy === 'email'}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting('email')}
-            >
-              メールアドレス
-            </Th>
-            <Th
-              sorted={sortBy === 'company'}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting('company')}
-            >
-              会社
-            </Th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length > 0 ? (
-            rows
-          ) : (
+    <Group>
+      <ScrollArea>
+        <Flex>
+          <TextInput
+            placeholder="Search by any field"
+            mb="md"
+            icon={<IconSearch size={14} stroke={1.5} />}
+            value={search}
+            onChange={handleSearchChange}
+          />
+          <Popover>
+            <Popover.Target>
+              <Button>表示する列を選択</Button>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <SortableList />
+            </Popover.Dropdown>
+          </Popover>
+        </Flex>
+        <MantineTable
+          horizontalSpacing="md"
+          verticalSpacing="xs"
+          sx={{ tableLayout: 'fixed', minWidth: 700 }}
+        >
+          <thead>
             <tr>
-              <td colSpan={Object.keys(data[0]).length}>
-                <Text weight={500} align="center">
-                  Nothing found
-                </Text>
-              </td>
+              <th style={{ width: 40 }}>
+                <Checkbox
+                  className={classes.checkbox}
+                  onChange={toggleAll}
+                  checked={selection.length === data.length}
+                  indeterminate={
+                    selection.length > 0 && selection.length !== data.length
+                  }
+                  transitionDuration={0}
+                />
+              </th>
+              <Th
+                sorted={sortBy === 'name'}
+                reversed={reverseSortDirection}
+                onSort={() => setSorting('name')}
+              >
+                名前
+              </Th>
+              <Th
+                sorted={sortBy === 'email'}
+                reversed={reverseSortDirection}
+                onSort={() => setSorting('email')}
+              >
+                メールアドレス
+              </Th>
+              <Th
+                sorted={sortBy === 'company'}
+                reversed={reverseSortDirection}
+                onSort={() => setSorting('company')}
+              >
+                会社
+              </Th>
             </tr>
-          )}
-        </tbody>
-      </MantineTable>
-    </ScrollArea>
+          </thead>
+          <tbody>
+            {rows.length > 0 ? (
+              rows
+            ) : (
+              <tr>
+                <td colSpan={Object.keys(data[0]).length}>
+                  <Text weight={500} align="center">
+                    Nothing found
+                  </Text>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </MantineTable>
+      </ScrollArea>
+    </Group>
   )
 }
