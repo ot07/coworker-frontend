@@ -162,11 +162,7 @@ const dummyData = () => {
 }
 
 const Wrapper: FC = () => {
-  return (
-    <div className="px-10 py-5 md:w-1/2 m-auto">
-      <Table data={dummyData()} columns={columns} />
-    </div>
-  )
+  return <Table data={dummyData()} columns={columns} />
 }
 
 const meta: Meta<typeof Wrapper> = {
