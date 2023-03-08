@@ -4,6 +4,7 @@ import {
   flexRender,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
+import { getSortedRowModel } from '@tanstack/react-table'
 import {
   createStyles,
   Group,
@@ -15,9 +16,10 @@ import {
   Center,
   Checkbox,
 } from '@mantine/core'
-import { FC, ReactNode, useState } from 'react'
+import { FC, MouseEventHandler, ReactNode, useState } from 'react'
 import { IconSelector } from '@tabler/icons-react'
-import { HasId } from '@/types/types'
+import { HasIdObject } from '@/types/types'
+import { IconChevronDown, IconChevronUp } from '@tabler/icons'
 
 const useStyles = createStyles((theme) => ({
   th: {
@@ -51,20 +53,30 @@ const useStyles = createStyles((theme) => ({
 
 type ThProps = {
   children: ReactNode
+  sortable: boolean
+  reversed: boolean
+  sorted: boolean
+  onSort?: MouseEventHandler<HTMLButtonElement>
 }
 
-const Th: FC<ThProps> = ({ children }) => {
+const Th: FC<ThProps> = ({ children, sortable, reversed, sorted, onSort }) => {
   const { classes } = useStyles()
-  const Icon = IconSelector
+  const Icon = sortable
+    ? sorted
+      ? reversed
+        ? IconChevronUp
+        : IconChevronDown
+      : IconSelector
+    : undefined
   return (
     <th className={classes.th}>
-      <UnstyledButton className={classes.control}>
+      <UnstyledButton onClick={onSort} className={classes.control}>
         <Group position="apart">
           <Text fw={500} fz="sm">
             {children}
           </Text>
           <Center className={classes.icon}>
-            <Icon size="0.9rem" stroke={1.5} />
+            {Icon && <Icon size="0.9rem" stroke={1.5} />}
           </Center>
         </Group>
       </UnstyledButton>
@@ -74,12 +86,12 @@ const Th: FC<ThProps> = ({ children }) => {
 
 export type TableColumn<TData> = ColumnDef<TData>
 
-export type TableProps<TData extends object> = {
+export type TableProps<TData extends HasIdObject> = {
   data: TData[]
   columns: TableColumn<TData>[]
 }
 
-export const Table = <TData extends object & HasId<string>>({
+export const Table = <TData extends HasIdObject>({
   data,
   columns,
 }: TableProps<TData>): JSX.Element => {
@@ -102,6 +114,7 @@ export const Table = <TData extends object & HasId<string>>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   })
 
   const rows = table.getRowModel().rows.map((row) => {
@@ -147,16 +160,27 @@ export const Table = <TData extends object & HasId<string>>({
                   transitionDuration={0}
                 />
               </th>
-              {headerGroup.headers.map((header) => (
-                <Th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </Th>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const sortable = header.column.getCanSort()
+                const isSorted = header.column.getIsSorted()
+
+                return (
+                  <Th
+                    key={header.id}
+                    sortable={sortable}
+                    reversed={isSorted === 'desc'}
+                    sorted={!!isSorted}
+                    onSort={header.column.getToggleSortingHandler()}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </Th>
+                )
+              })}
             </tr>
           ))}
         </thead>
