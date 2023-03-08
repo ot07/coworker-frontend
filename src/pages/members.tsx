@@ -1,5 +1,5 @@
 import { MainLayout } from '@/components/Layout'
-import { Table } from '@/components/Table'
+import { MembersTable } from '@/features/members'
 
 const data = {
   data: [
@@ -105,9 +105,7 @@ const data = {
 export default function Members() {
   return (
     <MainLayout title="メンバー一覧">
-      {/*<MembersTable />*/}
-      <Table data={data.data} key="id" />
-      {/*<TableSelection data={dataWithSelection.data} key="name" />*/}
+      <MembersTable />
     </MainLayout>
   )
 }
