@@ -13,9 +13,11 @@ import {
   rem,
   UnstyledButton,
   Center,
+  Checkbox,
 } from '@mantine/core'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, useState } from 'react'
 import { IconSelector } from '@tabler/icons-react'
+import { HasId } from '@/types/types'
 
 const useStyles = createStyles((theme) => ({
   th: {
@@ -38,6 +40,12 @@ const useStyles = createStyles((theme) => ({
     width: rem(21),
     height: rem(21),
     borderRadius: rem(21),
+  },
+
+  checkbox: {
+    input: {
+      cursor: 'pointer',
+    },
   },
 }))
 
@@ -71,25 +79,51 @@ export type TableProps<TData extends object> = {
   columns: TableColumn<TData>[]
 }
 
-export const Table = <TData extends object>({
+export const Table = <TData extends object & HasId<string>>({
   data,
   columns,
 }: TableProps<TData>): JSX.Element => {
+  const { classes } = useStyles()
+  const [selection, setSelection] = useState<string[]>([])
+
+  const toggleRow = (id: string) =>
+    setSelection((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id]
+    )
+
+  const toggleAll = () =>
+    setSelection((current) =>
+      current.length === data.length ? [] : data.map((item) => item.id)
+    )
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
 
-  const rows = table.getRowModel().rows.map((row) => (
-    <tr key={row.id}>
-      {row.getVisibleCells().map((cell) => (
-        <td key={cell.id}>
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+  const rows = table.getRowModel().rows.map((row) => {
+    const rowId = row.original.id
+    return (
+      <tr key={rowId}>
+        <td>
+          <Checkbox
+            className={classes.checkbox}
+            checked={selection.includes(rowId)}
+            onChange={() => toggleRow(rowId)}
+            transitionDuration={0}
+          />
         </td>
-      ))}
-    </tr>
-  ))
+        {row.getVisibleCells().map((cell) => (
+          <td key={cell.id}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </td>
+        ))}
+      </tr>
+    )
+  })
 
   return (
     <ScrollArea>
@@ -102,6 +136,17 @@ export const Table = <TData extends object>({
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
+              <th style={{ width: 40 }}>
+                <Checkbox
+                  className={classes.checkbox}
+                  onChange={toggleAll}
+                  checked={selection.length === data.length}
+                  indeterminate={
+                    selection.length > 0 && selection.length !== data.length
+                  }
+                  transitionDuration={0}
+                />
+              </th>
               {headerGroup.headers.map((header) => (
                 <Th key={header.id}>
                   {header.isPlaceholder

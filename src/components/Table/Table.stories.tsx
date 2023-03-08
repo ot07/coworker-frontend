@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Table, TableColumn } from './Table'
 import { FC } from 'react'
+import { createId } from '@paralleldrive/cuid2'
 
 // type Person = {
 //   id: string
@@ -125,6 +126,7 @@ import { FC } from 'react'
 // ]
 
 type Item = {
+  id: string
   name: string
   price: number
   quantity: number
@@ -152,7 +154,7 @@ const dummyData = () => {
   const items = []
   for (let i = 0; i < 10; i++) {
     items.push({
-      id: i,
+      id: createId(),
       name: `Item ${i}`,
       price: 100,
       quantity: 1,
