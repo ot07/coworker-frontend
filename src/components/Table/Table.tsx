@@ -114,6 +114,7 @@ export const useStyles = createStyles((theme) => ({
   displayColumnCard: {
     padding: '0.375rem 0.5rem 0.375rem 0.5rem',
     borderRadius: '0.375rem',
+    background: theme.white,
     '&:hover': {
       background: theme.colors.gray[1],
     },
@@ -277,7 +278,8 @@ export const Table = <TData extends HasIdObject>({
                         (header) => header.column.columnDef.header as string
                       )
                     )
-                    .flat()}
+                    .flat()
+                    .map((header) => ({ id: header, label: header }))}
                 />
               </Popover.Dropdown>
             </Popover>
