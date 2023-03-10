@@ -20,8 +20,9 @@ import {
   Title,
   Stack,
   Select,
+  Popover,
 } from '@mantine/core'
-import { ChangeEvent, FC, MouseEventHandler, ReactNode, useState } from 'react'
+import { FC, MouseEventHandler, ReactNode, useState } from 'react'
 import {
   IconAdjustments,
   IconDotsVertical,
@@ -30,8 +31,9 @@ import {
 } from '@tabler/icons-react'
 import { HasIdObject } from '@/types/types'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons'
+import { TableSettings } from '@/components/Table/TableSettings'
 
-const useStyles = createStyles((theme) => ({
+export const useStyles = createStyles((theme) => ({
   th: {
     padding: '0 !important',
   },
@@ -96,6 +98,24 @@ const useStyles = createStyles((theme) => ({
     alignItems: 'center',
     '&:hover': {
       color: theme.colors.blue[6],
+    },
+  },
+
+  dragButton: {
+    color: theme.colors.gray[6],
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    '&:hover': {
+      color: theme.colors.blue[6],
+    },
+  },
+
+  displayColumnCard: {
+    padding: '0.375rem 0.5rem 0.375rem 0.5rem',
+    borderRadius: '0.375rem',
+    '&:hover': {
+      background: theme.colors.gray[1],
     },
   },
 
@@ -235,9 +255,32 @@ export const Table = <TData extends HasIdObject>({
             <UnstyledButton className={classes.iconButton}>
               <IconAdjustments size="1.25rem" />
             </UnstyledButton>
-            <UnstyledButton className={classes.iconButton}>
-              <IconDotsVertical size="1.25rem" />
-            </UnstyledButton>
+            <Popover
+              width={200}
+              position="bottom"
+              withArrow
+              shadow="md"
+              arrowSize={0}
+              radius="md"
+            >
+              <Popover.Target>
+                <UnstyledButton className={classes.iconButton}>
+                  <IconDotsVertical size="1.25rem" />
+                </UnstyledButton>
+              </Popover.Target>
+              <Popover.Dropdown px={6}>
+                <TableSettings
+                  columns={table
+                    .getHeaderGroups()
+                    .map((headerGroup) =>
+                      headerGroup.headers.map(
+                        (header) => header.column.columnDef.header as string
+                      )
+                    )
+                    .flat()}
+                />
+              </Popover.Dropdown>
+            </Popover>
           </Group>
         </div>
         <MantineTable
