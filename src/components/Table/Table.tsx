@@ -3,7 +3,7 @@ import {
   useReactTable,
   flexRender,
 } from '@tanstack/react-table'
-import type { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef, ColumnOrderState } from '@tanstack/react-table'
 import { getSortedRowModel } from '@tanstack/react-table'
 import {
   createStyles,
@@ -180,6 +180,9 @@ export const Table = <TData extends HasIdObject>({
   const [activePage, setPage] = useState(1)
   const [perPage, setPerPage] = useState<string | null>('10')
   const [selection, setSelection] = useState<string[]>([])
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
+    columns.map((column) => column.id as string)
+  )
 
   const toggleRow = (id: string) =>
     setSelection((current) =>
@@ -196,6 +199,10 @@ export const Table = <TData extends HasIdObject>({
   const table = useReactTable({
     data,
     columns,
+    state: {
+      columnOrder,
+    },
+    onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
@@ -270,17 +277,7 @@ export const Table = <TData extends HasIdObject>({
                 </UnstyledButton>
               </Popover.Target>
               <Popover.Dropdown px={6}>
-                <TableSettings
-                  columns={table
-                    .getHeaderGroups()
-                    .map((headerGroup) =>
-                      headerGroup.headers.map(
-                        (header) => header.column.columnDef.header as string
-                      )
-                    )
-                    .flat()
-                    .map((header) => ({ id: header, label: header }))}
-                />
+                <TableSettings table={table} />
               </Popover.Dropdown>
             </Popover>
           </Group>

@@ -9,7 +9,6 @@ import {
 } from '@mantine/core'
 import { useStyles } from './Table'
 import { IconGripVertical } from '@tabler/icons'
-import { FC, useState } from 'react'
 import { DndContext, DragEndEvent, useDroppable } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -18,20 +17,18 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Header, Table } from '@tanstack/react-table'
 
-type Column = {
-  id: string
-  label: string
+type DisplayColumnCardProps<TData> = {
+  header: Header<TData, any>
 }
 
-type DisplayColumnCardProps = {
-  column: Column
-}
-
-const DisplayColumnCard: FC<DisplayColumnCardProps> = ({ column }) => {
+const DisplayColumnCard = <TData,>({
+  header,
+}: DisplayColumnCardProps<TData>): JSX.Element => {
   const { classes } = useStyles()
   const { attributes, listeners, setNodeRef, transform } = useSortable({
-    id: column.id,
+    id: header.column.id,
   })
   const sortableStyle = {
     transform: CSS.Transform.toString(transform),
@@ -46,9 +43,7 @@ const DisplayColumnCard: FC<DisplayColumnCardProps> = ({ column }) => {
       <div style={{ flex: 1 }}>
         <Group spacing="sm">
           <Checkbox className={classes.checkbox} />
-          <Text fz="sm" fw={500}>
-            {column.label}
-          </Text>
+          <Text fz="sm">{header.column.columnDef.header as string}</Text>
         </Group>
       </div>
       <UnstyledButton
@@ -62,13 +57,16 @@ const DisplayColumnCard: FC<DisplayColumnCardProps> = ({ column }) => {
   )
 }
 
-type DisplayColumnListProps = {
-  columns: Column[]
+type DisplayColumnListProps<TData> = {
+  table: Table<TData>
 }
 
-const DisplayColumnList: FC<DisplayColumnListProps> = ({ columns }) => {
+const DisplayColumnList = <TData,>({
+  table,
+}: DisplayColumnListProps<TData>): JSX.Element => {
+  const headers = table.getLeafHeaders()
+  const { setColumnOrder } = table
   const { setNodeRef } = useDroppable({ id: '1' })
-  const [sortedColumns, setSortedColumns] = useState(columns)
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -76,20 +74,20 @@ const DisplayColumnList: FC<DisplayColumnListProps> = ({ columns }) => {
     const overId = over?.id
 
     if (!!overId && activeId !== overId) {
-      setSortedColumns((items) => {
-        const oldIndex = items.findIndex(({ id }) => id === activeId.toString())
-        const newIndex = items.findIndex(({ id }) => id === overId.toString())
-        return arrayMove(items, oldIndex, newIndex)
+      setColumnOrder((order) => {
+        const oldIndex = order.findIndex((id) => id === activeId.toString())
+        const newIndex = order.findIndex((id) => id === overId.toString())
+        return arrayMove(order, oldIndex, newIndex)
       })
     }
   }
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <SortableContext items={sortedColumns} strategy={rectSortingStrategy}>
+      <SortableContext items={headers} strategy={rectSortingStrategy}>
         <Stack ref={setNodeRef} spacing={0}>
-          {sortedColumns.map((column) => (
-            <DisplayColumnCard key={column.id} column={column} />
+          {headers.map((header) => (
+            <DisplayColumnCard key={header.id} header={header} />
           ))}
         </Stack>
       </SortableContext>
@@ -97,18 +95,20 @@ const DisplayColumnList: FC<DisplayColumnListProps> = ({ columns }) => {
   )
 }
 
-type TableSettingsProps = {
-  columns: Column[]
+type TableSettingsProps<TData> = {
+  table: Table<TData>
 }
 
-export const TableSettings: FC<TableSettingsProps> = ({ columns }) => {
+export const TableSettings = <TData,>({
+  table,
+}: TableSettingsProps<TData>): JSX.Element => {
   return (
     <Stack spacing="xs">
       <Stack spacing={4}>
         <Text fz="xs" c="dimmed" px={8}>
           表示する列
         </Text>
-        <DisplayColumnList columns={columns} />
+        <DisplayColumnList table={table} />
       </Stack>
       <Divider />
       <Stack>

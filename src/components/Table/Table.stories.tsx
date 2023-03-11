@@ -12,16 +12,19 @@ type Item = {
 
 const columns: TableColumn<Item>[] = [
   {
+    id: 'name',
     header: 'Name',
     cell: (row) => row.renderValue(),
     accessorKey: 'name',
   },
   {
+    id: 'price',
     header: 'Price',
     cell: (row) => row.renderValue(),
     accessorKey: 'price',
   },
   {
+    id: 'quantity',
     header: 'Quantity',
     cell: (row) => row.renderValue(),
     accessorKey: 'quantity',
