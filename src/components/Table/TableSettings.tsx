@@ -17,18 +17,18 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Header, Table } from '@tanstack/react-table'
+import { Column, Table } from '@tanstack/react-table'
 
 type DisplayColumnCardProps<TData> = {
-  header: Header<TData, any>
+  column: Column<TData, any>
 }
 
 const DisplayColumnCard = <TData,>({
-  header,
+  column,
 }: DisplayColumnCardProps<TData>): JSX.Element => {
   const { classes } = useStyles()
   const { attributes, listeners, setNodeRef, transform } = useSortable({
-    id: header.column.id,
+    id: column.id,
   })
   const sortableStyle = {
     transform: CSS.Transform.toString(transform),
@@ -42,8 +42,12 @@ const DisplayColumnCard = <TData,>({
     >
       <div style={{ flex: 1 }}>
         <Group spacing="sm">
-          <Checkbox className={classes.checkbox} />
-          <Text fz="sm">{header.column.columnDef.header as string}</Text>
+          <Checkbox
+            className={classes.checkbox}
+            checked={column.getIsVisible()}
+            onChange={column.getToggleVisibilityHandler()}
+          />
+          <Text fz="sm">{column.columnDef.header as string}</Text>
         </Group>
       </div>
       <UnstyledButton
@@ -64,7 +68,7 @@ type DisplayColumnListProps<TData> = {
 const DisplayColumnList = <TData,>({
   table,
 }: DisplayColumnListProps<TData>): JSX.Element => {
-  const headers = table.getLeafHeaders()
+  const columns = table.getAllLeafColumns()
   const { setColumnOrder } = table
   const { setNodeRef } = useDroppable({ id: '1' })
 
@@ -84,10 +88,10 @@ const DisplayColumnList = <TData,>({
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <SortableContext items={headers} strategy={rectSortingStrategy}>
+      <SortableContext items={columns} strategy={rectSortingStrategy}>
         <Stack ref={setNodeRef} spacing={0}>
-          {headers.map((header) => (
-            <DisplayColumnCard key={header.id} header={header} />
+          {columns.map((column) => (
+            <DisplayColumnCard key={column.id} column={column} />
           ))}
         </Stack>
       </SortableContext>

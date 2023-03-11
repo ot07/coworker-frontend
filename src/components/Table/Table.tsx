@@ -180,6 +180,7 @@ export const Table = <TData extends HasIdObject>({
   const [activePage, setPage] = useState(1)
   const [perPage, setPerPage] = useState<string | null>('10')
   const [selection, setSelection] = useState<string[]>([])
+  const [columnVisibility, setColumnVisibility] = useState({})
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
     columns.map((column) => column.id as string)
   )
@@ -200,8 +201,10 @@ export const Table = <TData extends HasIdObject>({
     data,
     columns,
     state: {
+      columnVisibility,
       columnOrder,
     },
+    onColumnVisibilityChange: setColumnVisibility,
     onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
