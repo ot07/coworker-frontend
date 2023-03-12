@@ -15,12 +15,12 @@ import {
   UnstyledButton,
   Center,
   Checkbox,
-  Pagination,
   TextInput,
   Title,
   Stack,
   Select,
   Popover,
+  Pagination as MantinePagination,
 } from '@mantine/core'
 import {
   FC,
@@ -138,6 +138,11 @@ export const useStyles = createStyles((theme) => ({
   },
 }))
 
+type Pagination = {
+  page: number
+  pageSize: number
+}
+
 type ThProps = {
   children: ReactNode
   sortable: boolean
@@ -177,10 +182,8 @@ export type TableProps<TData extends HasIdObject> = {
   data: TData[]
   columns: TableColumn<TData>[]
   totalCount: number
-  page: number
-  pageSize: number
-  onPageChange?: (page: number) => void
-  onPageSizeChange?: (pageSize: number) => void
+  pagination: Pagination
+  onPaginationChange?: (pagination: Pagination) => void
   pageSizeOptions: number[]
 }
 
@@ -188,40 +191,37 @@ export const Table = <TData extends HasIdObject>({
   data,
   columns,
   totalCount,
-  page,
-  pageSize,
-  onPageChange,
-  onPageSizeChange,
+  pagination,
+  onPaginationChange,
   pageSizeOptions,
 }: TableProps<TData>): JSX.Element => {
+  const pageCount = Math.ceil(totalCount / pagination.pageSize)
+
+  if (pagination.page < 1 || pagination.page > pageCount) {
+    throw new Error('`page` is out of range.')
+  }
+
+  if (!pageSizeOptions.includes(pagination.pageSize)) {
+    throw new Error(
+      '`pagination.pageSize` should be selected from `pageSizeOptions`.'
+    )
+  }
+
   const { classes } = useStyles()
+  const { page, pageSize } = pagination
+  const pageIndex = page - 1
   const [searchQuery, setSearchQuery] = useState('')
   const [selection, setSelection] = useState<string[]>([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
     columns.map((column) => column.id as string)
   )
-  const pageCount = Math.ceil(totalCount / pageSize)
-
-  if (page < 1 || page > pageCount) {
-    throw new Error('`page` is out of range.')
-  }
-
-  if (!pageSizeOptions.includes(pageSize)) {
-    throw new Error('`pageSize` should be selected from `pageSizeOptions`.')
-  }
-
-  const pagination = useMemo(
-    () => ({ pageIndex: page - 1, pageSize }),
-    [page, pageSize]
-  )
-
   const { startNumber, endNumber } = useMemo(
     () => ({
-      startNumber: pagination.pageIndex * pagination.pageSize + 1,
-      endNumber: pagination.pageIndex * pagination.pageSize + data.length,
+      startNumber: pageIndex * pageSize + 1,
+      endNumber: pageIndex * pageSize + data.length,
     }),
-    [pagination, data]
+    [data, pageIndex, pageSize]
   )
 
   const toggleRow = (id: string) =>
@@ -243,7 +243,7 @@ export const Table = <TData extends HasIdObject>({
     state: {
       columnVisibility,
       columnOrder,
-      pagination,
+      pagination: { pageIndex, pageSize },
     },
     onColumnVisibilityChange: setColumnVisibility,
     onColumnOrderChange: setColumnOrder,
@@ -251,13 +251,6 @@ export const Table = <TData extends HasIdObject>({
     getSortedRowModel: getSortedRowModel(),
     manualPagination: true,
   })
-
-  // useLayoutEffect(() => {
-  //   if (onPageChange && prevPageSize && prevPageSize < pageSize) {
-  //     const nextPageCount = Math.ceil(totalCount / pageSize)
-  //     onPageChange(nextPageCount)
-  //   }
-  // }, [pageSize, prevPageSize, onPageChange, totalCount])
 
   useLayoutEffect(() => {
     table.setPageSize(pageSize)
@@ -428,22 +421,21 @@ export const Table = <TData extends HasIdObject>({
                 className={classes.perPageSelect}
                 value={String(pageSize)}
                 onChange={(value) => {
-                  if (value) {
-                    const nextPageSize = Number(value)
+                  if (value && onPaginationChange) {
+                    const newPageSize = Number(value)
 
-                    if (onPageChange) {
-                      if (pageSize < nextPageSize) {
-                        const nextPageCount = Math.ceil(
-                          totalCount / nextPageSize
-                        )
-                        const nextPage =
-                          page <= nextPageCount ? page : nextPageCount
-                        onPageChange(nextPage)
-                      }
-                    }
-
-                    if (onPageSizeChange) {
-                      onPageSizeChange(nextPageSize)
+                    if (pageSize < newPageSize) {
+                      const newPageCount = Math.ceil(totalCount / newPageSize)
+                      const newPage = page <= newPageCount ? page : newPageCount
+                      onPaginationChange({
+                        page: newPage,
+                        pageSize: newPageSize,
+                      })
+                    } else {
+                      onPaginationChange({
+                        page,
+                        pageSize: newPageSize,
+                      })
                     }
                   }
                 }}
@@ -457,13 +449,13 @@ export const Table = <TData extends HasIdObject>({
               </Text>
             </Group>
           </Group>
-          <Pagination
+          <MantinePagination
             value={page}
-            // value={table.getState().pagination.pageIndex + 1}
-            onChange={(page) => onPageChange && onPageChange(page)}
-            // onChange={(page) => table.setPageIndex(page - 1)}
+            onChange={(newPage) =>
+              onPaginationChange &&
+              onPaginationChange({ page: newPage, pageSize })
+            }
             total={pageCount}
-            // total={table.getPageCount()}
           />
         </div>
       </div>

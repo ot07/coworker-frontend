@@ -46,24 +46,21 @@ const dummyData = (size: number) => {
 }
 
 const Wrapper: FC = () => {
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
   const [totalCount] = useState(100)
-  const [data, setData] = useState(dummyData(pageSize))
+  const [pagination, setPagination] = useState({ page: 1, pageSize: 10 })
+  const [data, setData] = useState(dummyData(pagination.pageSize))
 
   useLayoutEffect(() => {
-    setData(dummyData(pageSize))
-  }, [page, pageSize])
+    setData(dummyData(pagination.pageSize))
+  }, [pagination])
 
   return (
     <Table
       data={data}
       columns={columns}
       totalCount={totalCount}
-      page={page}
-      pageSize={pageSize}
-      onPageChange={(p) => setPage(p)}
-      onPageSizeChange={(p) => setPageSize(p)}
+      pagination={pagination}
+      onPaginationChange={setPagination}
       pageSizeOptions={[10, 20, 30]}
     />
   )
