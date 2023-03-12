@@ -39,6 +39,9 @@ import {
 import { HasIdObject } from '@/types/types'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons'
 import { TableSettings } from '@/components/Table/TableSettings'
+import SimpleBar from 'simplebar-react'
+import 'simplebar-react/dist/simplebar.min.css'
+import { useEventListenerRef } from 'rooks'
 
 export const useStyles = createStyles((theme) => ({
   header: {
@@ -239,6 +242,11 @@ export const Table = <TData extends HasIdObject>({
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
     columns.map((column) => column.id as string)
   )
+  const tableViewportRef = useEventListenerRef('scroll', (e) => {
+    if (e instanceof Event && e.target instanceof HTMLDivElement) {
+      setScrolled(e.target.scrollTop !== 0)
+    }
+  })
   const { startNumber, endNumber } = useMemo(
     () => ({
       startNumber: pageIndex * pageSize + 1,
@@ -355,10 +363,15 @@ export const Table = <TData extends HasIdObject>({
             </Popover>
           </Group>
         </div>
-        <ScrollArea
-          h={tableViewportHeight}
-          onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
+        <SimpleBar
+          // ref={tableViewportRef}
+          scrollableNodeProps={{ ref: tableViewportRef }}
+          style={{ maxHeight: tableViewportHeight }}
         >
+          {/*<ScrollArea*/}
+          {/*  h={tableViewportHeight}*/}
+          {/*  onScrollPositionChange={({ y }) => setScrolled(y !== 0)}*/}
+          {/*>*/}
           <MantineTable horizontalSpacing="md" verticalSpacing="xs" miw={700}>
             <thead
               className={cx(classes.header, { [classes.scrolled]: scrolled })}
@@ -414,7 +427,8 @@ export const Table = <TData extends HasIdObject>({
               )}
             </tbody>
           </MantineTable>
-        </ScrollArea>
+          {/*</ScrollArea>*/}
+        </SimpleBar>
 
         <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2">
           <Group spacing={32}>

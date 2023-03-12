@@ -56,6 +56,8 @@ specifiers:
   react-beautiful-dnd: ^13.1.1
   react-dom: 18.2.0
   react-hook-form: ^7.43.2
+  rooks: ^7.4.4
+  simplebar-react: ^3.2.1
   storybook: ^7.0.0-beta.61
   style-loader: ^3.3.1
   tailwindcss: ^3.2.7
@@ -109,6 +111,8 @@ dependencies:
   react-beautiful-dnd: 13.1.1_biqbaboplfbrettd7655fr4n2y
   react-dom: 18.2.0_react@18.2.0
   react-hook-form: 7.43.2_react@18.2.0
+  rooks: 7.4.4_biqbaboplfbrettd7655fr4n2y
+  simplebar-react: 3.2.1_react@18.2.0
   tailwindcss: 3.2.7_postcss@8.4.21
   ts-essentials: 9.3.0_typescript@4.9.5
   typescript: 4.9.5
@@ -6731,6 +6735,10 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /can-use-dom/0.1.0:
+    resolution: {integrity: sha512-ceOhN1DL7Y4O6M0j9ICgmTYziV89WMd96SvSl0REd8PMgrY0B/WBOPoed5S1KUmJqXgUXh8gzSe6E3ae27upsQ==}
+    dev: false
+
   /caniuse-lite/1.0.30001457:
     resolution: {integrity: sha512-SDIV6bgE1aVbK6XyxdURbUE89zY7+k1BBBaOwYwkNCglXlel/E7mELiHC64HQ+W0xSKlqWhV9Wh7iHxUjMs4fA==}
 
@@ -9848,9 +9856,12 @@ packages:
     dependencies:
       p-locate: 5.0.0
 
+  /lodash-es/4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
+    dev: false
+
   /lodash.debounce/4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
-    dev: true
 
   /lodash.get/4.4.2:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
@@ -10696,6 +10707,10 @@ packages:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
     dev: true
 
+  /performance-now/2.1.0:
+    resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
+    dev: false
+
   /picocolors/0.2.1:
     resolution: {integrity: sha512-cMlDqaLEqfSaW8Z7N5Jw+lyIW869EzT73/F5lhtY9cLGoVxSXznfgfXMO0Z5K0o0Q2TkTXq+0KFsdnSe3jDViA==}
     dev: true
@@ -11165,6 +11180,12 @@ packages:
 
   /raf-schd/4.0.3:
     resolution: {integrity: sha512-tQkJl2GRWh83ui2DiPTJz9wEiMN20syf+5oKfB03yYP7ioZcJwsIK8FjrtLwH1m7C7e+Tt2yYBlrOpdT+dyeIQ==}
+    dev: false
+
+  /raf/3.4.1:
+    resolution: {integrity: sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==}
+    dependencies:
+      performance-now: 2.1.0
     dev: false
 
   /ramda/0.28.0:
@@ -11701,6 +11722,19 @@ packages:
       fsevents: 2.3.2
     dev: false
 
+  /rooks/7.4.4_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-duwW4WIM1hz+OZeGuirqKai/2E5xLNhmU6j6xj+1/bCeauJL4j0jIoerkeCmWcekFNpX3uWYz/QFHtwuP5AfZQ==}
+    engines: {node: '>=v10.24.1'}
+    peerDependencies:
+      react: ^16.8.0  || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0  || ^17.0.0 || ^18.0.0
+    dependencies:
+      lodash.debounce: 4.0.8
+      raf: 3.4.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
   /run-parallel/1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
     dependencies:
@@ -11953,6 +11987,22 @@ packages:
     dependencies:
       semver: 7.0.0
     dev: true
+
+  /simplebar-core/1.2.1:
+    resolution: {integrity: sha512-dgX6qDOSDM3+crxFstIKOlxyxnD3NYGRPm7CqmAtnNfFLVeadrydym5eNpduIO7aDFU/rayS6hEdrcxO0WBqnQ==}
+    dependencies:
+      can-use-dom: 0.1.0
+      lodash-es: 4.17.21
+    dev: false
+
+  /simplebar-react/3.2.1_react@18.2.0:
+    resolution: {integrity: sha512-viHQs/34ZQk956b88Kl7+VckWO8DKOhg2Hkl8kjPv2q16w+/nnOJOGhZKrpj/egMGqDpQywou2AhdRkAM0oddA==}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
+      simplebar-core: 1.2.1
+    dev: false
 
   /sisteransi/1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
