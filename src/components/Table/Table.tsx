@@ -22,7 +22,14 @@ import {
   Select,
   Popover,
 } from '@mantine/core'
-import { FC, MouseEventHandler, ReactNode, useState } from 'react'
+import {
+  FC,
+  MouseEventHandler,
+  ReactNode,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {
   IconAdjustments,
   IconDotsVertical,
@@ -169,20 +176,52 @@ export type TableColumn<TData> = ColumnDef<TData>
 export type TableProps<TData extends HasIdObject> = {
   data: TData[]
   columns: TableColumn<TData>[]
+  totalCount: number
+  page: number
+  pageSize: number
+  onPageChange?: (page: number) => void
+  onPageSizeChange?: (pageSize: number) => void
+  pageSizeOptions: number[]
 }
 
 export const Table = <TData extends HasIdObject>({
   data,
   columns,
+  totalCount,
+  page,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+  pageSizeOptions,
 }: TableProps<TData>): JSX.Element => {
   const { classes } = useStyles()
   const [searchQuery, setSearchQuery] = useState('')
-  const [activePage, setPage] = useState(1)
-  const [perPage, setPerPage] = useState<string | null>('10')
   const [selection, setSelection] = useState<string[]>([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
     columns.map((column) => column.id as string)
+  )
+  const pageCount = Math.ceil(totalCount / pageSize)
+
+  if (page < 1 || page > pageCount) {
+    throw new Error('`page` is out of range.')
+  }
+
+  if (!pageSizeOptions.includes(pageSize)) {
+    throw new Error('`pageSize` should be selected from `pageSizeOptions`.')
+  }
+
+  const pagination = useMemo(
+    () => ({ pageIndex: page - 1, pageSize }),
+    [page, pageSize]
+  )
+
+  const { startNumber, endNumber } = useMemo(
+    () => ({
+      startNumber: pagination.pageIndex * pagination.pageSize + 1,
+      endNumber: pagination.pageIndex * pagination.pageSize + data.length,
+    }),
+    [pagination, data]
   )
 
   const toggleRow = (id: string) =>
@@ -200,15 +239,30 @@ export const Table = <TData extends HasIdObject>({
   const table = useReactTable({
     data,
     columns,
+    pageCount,
     state: {
       columnVisibility,
       columnOrder,
+      pagination,
     },
     onColumnVisibilityChange: setColumnVisibility,
     onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    manualPagination: true,
   })
+
+  // useLayoutEffect(() => {
+  //   if (onPageChange && prevPageSize && prevPageSize < pageSize) {
+  //     const nextPageCount = Math.ceil(totalCount / pageSize)
+  //     onPageChange(nextPageCount)
+  //   }
+  // }, [pageSize, prevPageSize, onPageChange, totalCount])
+
+  useLayoutEffect(() => {
+    table.setPageSize(pageSize)
+    table.setPageIndex(page - 1)
+  }, [table, page, pageSize])
 
   const rows = table.getRowModel().rows.map((row) => {
     const rowId = row.original.id
@@ -348,13 +402,13 @@ export const Table = <TData extends HasIdObject>({
           <Group spacing={32}>
             <Group spacing={6}>
               <Text fz="md" pb={2}>
-                100
+                {totalCount}
               </Text>
               <Text fz="xs" c="dimmed">
                 件中
               </Text>
               <Text fz="md" pb={2}>
-                1
+                {startNumber}
               </Text>
               <Text fz="xs" c="dimmed">
                 件
@@ -363,7 +417,7 @@ export const Table = <TData extends HasIdObject>({
                 〜
               </Text>
               <Text fz="md" pb={2}>
-                10
+                {endNumber}
               </Text>
               <Text fz="xs" c="dimmed">
                 件
@@ -372,20 +426,45 @@ export const Table = <TData extends HasIdObject>({
             <Group spacing="xs">
               <Select
                 className={classes.perPageSelect}
-                value={perPage}
-                onChange={setPerPage}
-                data={[
-                  { value: '10', label: '10' },
-                  { value: '20', label: '20' },
-                  { value: '30', label: '30' },
-                ]}
+                value={String(pageSize)}
+                onChange={(value) => {
+                  if (value) {
+                    const nextPageSize = Number(value)
+
+                    if (onPageChange) {
+                      if (pageSize < nextPageSize) {
+                        const nextPageCount = Math.ceil(
+                          totalCount / nextPageSize
+                        )
+                        const nextPage =
+                          page <= nextPageCount ? page : nextPageCount
+                        onPageChange(nextPage)
+                      }
+                    }
+
+                    if (onPageSizeChange) {
+                      onPageSizeChange(nextPageSize)
+                    }
+                  }
+                }}
+                data={pageSizeOptions.map((option) => ({
+                  value: String(option),
+                  label: String(option),
+                }))}
               />
               <Text fz="xs" c="dimmed">
                 件表示
               </Text>
             </Group>
           </Group>
-          <Pagination value={activePage} onChange={setPage} total={10} />
+          <Pagination
+            value={page}
+            // value={table.getState().pagination.pageIndex + 1}
+            onChange={(page) => onPageChange && onPageChange(page)}
+            // onChange={(page) => table.setPageIndex(page - 1)}
+            total={pageCount}
+            // total={table.getPageCount()}
+          />
         </div>
       </div>
     </ScrollArea>
