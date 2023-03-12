@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Table, TableColumn } from './Table'
-import { FC, useLayoutEffect, useState } from 'react'
+import { FC, useCallback, useLayoutEffect, useState } from 'react'
 import { createId } from '@paralleldrive/cuid2'
 
 type Item = {
@@ -54,14 +54,18 @@ const Wrapper: FC = () => {
     setData(dummyData(pagination.pageSize))
   }, [pagination])
 
+  const handleSearch = useCallback((query: string) => alert(query), [])
+
   return (
     <Table
       data={data}
       columns={columns}
       totalCount={totalCount}
       pagination={pagination}
-      onPaginationChange={setPagination}
       pageSizeOptions={[10, 20, 30]}
+      onPaginationChange={setPagination}
+      onSearch={handleSearch}
+      tableViewportHeight={300}
     />
   )
 }

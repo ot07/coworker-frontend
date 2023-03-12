@@ -41,6 +41,27 @@ import { IconChevronDown, IconChevronUp } from '@tabler/icons'
 import { TableSettings } from '@/components/Table/TableSettings'
 
 export const useStyles = createStyles((theme) => ({
+  header: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 10,
+    backgroundColor: theme.white,
+    transition: 'box-shadow 150ms ease',
+
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderBottom: `${rem(1)} solid ${theme.colors.gray[2]}`,
+    },
+  },
+
+  scrolled: {
+    boxShadow: theme.shadows.sm,
+  },
+
   th: {
     padding: '0 !important',
   },
@@ -50,10 +71,7 @@ export const useStyles = createStyles((theme) => ({
     padding: `${theme.spacing.xs} ${theme.spacing.md}`,
 
     '&:hover': {
-      backgroundColor:
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[6]
-          : theme.colors.gray[0],
+      backgroundColor: theme.colors.gray[0],
     },
   },
 
@@ -127,7 +145,7 @@ export const useStyles = createStyles((theme) => ({
     },
   },
 
-  perPageSelect: {
+  pageSizeSelect: {
     input: {
       borderRadius: '0.5rem',
       border: '0.0625rem solid #dee2e6',
@@ -183,8 +201,10 @@ export type TableProps<TData extends HasIdObject> = {
   columns: TableColumn<TData>[]
   totalCount: number
   pagination: Pagination
-  onPaginationChange?: (pagination: Pagination) => void
   pageSizeOptions: number[]
+  onPaginationChange?: (pagination: Pagination) => void
+  onSearch?: (query: string) => void
+  tableViewportHeight?: number
 }
 
 export const Table = <TData extends HasIdObject>({
@@ -192,8 +212,10 @@ export const Table = <TData extends HasIdObject>({
   columns,
   totalCount,
   pagination,
-  onPaginationChange,
   pageSizeOptions,
+  onPaginationChange,
+  onSearch,
+  tableViewportHeight,
 }: TableProps<TData>): JSX.Element => {
   const pageCount = Math.ceil(totalCount / pagination.pageSize)
 
@@ -207,9 +229,10 @@ export const Table = <TData extends HasIdObject>({
     )
   }
 
-  const { classes } = useStyles()
+  const { classes, cx } = useStyles()
   const { page, pageSize } = pagination
   const pageIndex = page - 1
+  const [scrolled, setScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selection, setSelection] = useState<string[]>([])
   const [columnVisibility, setColumnVisibility] = useState({})
@@ -298,7 +321,7 @@ export const Table = <TData extends HasIdObject>({
               rightSection={
                 <UnstyledButton
                   className={classes.searchButton}
-                  onClick={() => console.log('search:', searchQuery)}
+                  onClick={() => onSearch && onSearch(searchQuery)}
                 >
                   <IconSearch size="1rem" />
                 </UnstyledButton>
@@ -306,7 +329,7 @@ export const Table = <TData extends HasIdObject>({
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  console.log('search:', searchQuery)
+                  onSearch && onSearch(searchQuery)
                 }
               }}
             />
@@ -332,64 +355,66 @@ export const Table = <TData extends HasIdObject>({
             </Popover>
           </Group>
         </div>
-        <MantineTable
-          horizontalSpacing="md"
-          verticalSpacing="xs"
-          miw={700}
-          sx={{ tableLayout: 'fixed' }}
+        <ScrollArea
+          h={tableViewportHeight}
+          onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
         >
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                <th style={{ width: 40 }}>
-                  <Checkbox
-                    className={classes.checkbox}
-                    onChange={toggleAll}
-                    checked={selection.length === data.length}
-                    indeterminate={
-                      selection.length > 0 && selection.length !== data.length
-                    }
-                    transitionDuration={0}
-                  />
-                </th>
-                {headerGroup.headers.map((header) => {
-                  const sortable = header.column.getCanSort()
-                  const isSorted = header.column.getIsSorted()
+          <MantineTable horizontalSpacing="md" verticalSpacing="xs" miw={700}>
+            <thead
+              className={cx(classes.header, { [classes.scrolled]: scrolled })}
+            >
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  <th style={{ width: 40 }}>
+                    <Checkbox
+                      className={classes.checkbox}
+                      onChange={toggleAll}
+                      checked={selection.length === data.length}
+                      indeterminate={
+                        selection.length > 0 && selection.length !== data.length
+                      }
+                      transitionDuration={0}
+                    />
+                  </th>
+                  {headerGroup.headers.map((header) => {
+                    const sortable = header.column.getCanSort()
+                    const isSorted = header.column.getIsSorted()
 
-                  return (
-                    <Th
-                      key={header.id}
-                      sortable={sortable}
-                      reversed={isSorted === 'desc'}
-                      sorted={!!isSorted}
-                      onSort={header.column.getToggleSortingHandler()}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </Th>
-                  )
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {rows.length > 0 ? (
-              rows
-            ) : (
-              <tr>
-                <td colSpan={Object.keys(data[0]).length}>
-                  <Text weight={500} align="center">
-                    Nothing found
-                  </Text>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </MantineTable>
+                    return (
+                      <Th
+                        key={header.id}
+                        sortable={sortable}
+                        reversed={isSorted === 'desc'}
+                        sorted={!!isSorted}
+                        onSort={header.column.getToggleSortingHandler()}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </Th>
+                    )
+                  })}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {rows.length > 0 ? (
+                rows
+              ) : (
+                <tr>
+                  <td colSpan={Object.keys(data[0]).length}>
+                    <Text weight={500} align="center">
+                      Nothing found
+                    </Text>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </MantineTable>
+        </ScrollArea>
 
         <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2">
           <Group spacing={32}>
@@ -418,7 +443,7 @@ export const Table = <TData extends HasIdObject>({
             </Group>
             <Group spacing="xs">
               <Select
-                className={classes.perPageSelect}
+                className={classes.pageSizeSelect}
                 value={String(pageSize)}
                 onChange={(value) => {
                   if (value && onPaginationChange) {
