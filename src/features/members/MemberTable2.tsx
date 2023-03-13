@@ -40,7 +40,7 @@ export const MembersTable2 = () => {
       columns={columns}
       totalCount={data?.meta.totalCount || 0}
       pagination={pagination}
-      pageSizeOptions={[5, 10, 20]}
+      pageSizeOptions={[5, 10]}
       onPaginationChange={setPagination}
       tableViewportHeight={300}
     />

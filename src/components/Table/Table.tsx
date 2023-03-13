@@ -4,7 +4,7 @@ import {
   flexRender,
   createColumnHelper,
 } from '@tanstack/react-table'
-import type { ColumnDef, ColumnOrderState } from '@tanstack/react-table'
+import type { ColumnOrderState } from '@tanstack/react-table'
 import { getSortedRowModel } from '@tanstack/react-table'
 import {
   createStyles,
@@ -68,6 +68,14 @@ export const useStyles = createStyles((theme) => ({
 
   th: {
     padding: '0 !important',
+  },
+
+  body: {
+    backgroundColor: theme.white,
+  },
+
+  bodyInsufficientData: {
+    borderBottomWidth: '1px',
   },
 
   control: {
@@ -237,7 +245,7 @@ export const Table = <TData extends HasIdObject>({
     )
   }
 
-  const { classes, cx } = useStyles()
+  const { classes, cx, theme } = useStyles()
   const { page, pageSize } = pagination
   const pageIndex = page - 1
   const [scrolled, setScrolled] = useState(false)
@@ -379,7 +387,10 @@ export const Table = <TData extends HasIdObject>({
         </div>
         <SimpleBar
           scrollableNodeProps={{ ref: tableViewportRef }}
-          style={{ maxHeight: tableViewportHeight }}
+          style={{
+            height: tableViewportHeight,
+            backgroundColor: theme.colors.gray[0],
+          }}
         >
           <MantineTable horizontalSpacing="md" verticalSpacing="xs" miw={700}>
             <thead
@@ -422,7 +433,11 @@ export const Table = <TData extends HasIdObject>({
                 </tr>
               ))}
             </thead>
-            <tbody>
+            <tbody
+              className={cx(classes.body, {
+                [classes.bodyInsufficientData]: data.length < pageCount,
+              })}
+            >
               {rows.length > 0 ? (
                 rows
               ) : (
@@ -436,7 +451,6 @@ export const Table = <TData extends HasIdObject>({
               )}
             </tbody>
           </MantineTable>
-          {/*</ScrollArea>*/}
         </SimpleBar>
 
         <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2">
