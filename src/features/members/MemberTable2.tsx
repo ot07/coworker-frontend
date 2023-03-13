@@ -1,4 +1,4 @@
-import { Table, TableColumn } from '@/components/Table'
+import { Table, Column } from '@/components/Table'
 import { Member, useGetMembers } from '@/features/members/useMembers'
 import { useState } from 'react'
 import dayjs from 'dayjs'
@@ -10,24 +10,19 @@ export const MembersTable2 = () => {
     pagination.pageSize
   )
 
-  const columns: TableColumn<Member>[] = [
+  const columns: Column<Member>[] = [
     {
-      id: 'fullName',
+      key: 'fullName',
       header: '名前',
-      cell: (row) => row.renderValue(),
-      accessorKey: 'fullName',
     },
     {
-      id: 'email',
+      key: 'email',
       header: 'メールアドレス',
-      cell: (row) => row.renderValue(),
-      accessorKey: 'email',
     },
     {
-      id: 'dateAdded',
+      key: 'dateAdded',
       header: '追加日',
-      cell: (row) => dayjs(row.renderValue()).format('YYYY/MM/DD'),
-      accessorKey: 'dateAdded',
+      render: ({ dateAdded }) => dayjs(dateAdded).format('YYYY/MM/DD'),
     },
   ]
 

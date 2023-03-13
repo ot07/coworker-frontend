@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Table, TableColumn } from './Table'
+import { Table, Column } from './Table'
 import { FC, useCallback, useLayoutEffect, useState } from 'react'
 import { createId } from '@paralleldrive/cuid2'
+import dayjs from 'dayjs'
 
 type Item = {
   id: string
@@ -10,24 +11,18 @@ type Item = {
   quantity: number
 }
 
-const columns: TableColumn<Item>[] = [
+const columns: Column<Item>[] = [
   {
-    id: 'name',
+    key: 'name',
     header: 'Name',
-    cell: (row) => row.renderValue(),
-    accessorKey: 'name',
   },
   {
-    id: 'price',
+    key: 'price',
     header: 'Price',
-    cell: (row) => row.renderValue(),
-    accessorKey: 'price',
   },
   {
-    id: 'quantity',
+    key: 'quantity',
     header: 'Quantity',
-    cell: (row) => row.renderValue(),
-    accessorKey: 'quantity',
   },
 ]
 

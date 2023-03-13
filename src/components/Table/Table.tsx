@@ -2,6 +2,7 @@ import {
   getCoreRowModel,
   useReactTable,
   flexRender,
+  createColumnHelper,
 } from '@tanstack/react-table'
 import type { ColumnDef, ColumnOrderState } from '@tanstack/react-table'
 import { getSortedRowModel } from '@tanstack/react-table'
@@ -197,11 +198,15 @@ const Th: FC<ThProps> = ({ children, sortable, reversed, sorted, onSort }) => {
   )
 }
 
-export type TableColumn<TData> = ColumnDef<TData>
+export type Column<TData> = {
+  key: Extract<keyof TData, string>
+  header: string
+  render?: (row: TData) => ReactNode
+}
 
 export type TableProps<TData extends HasIdObject> = {
   data: TData[]
-  columns: TableColumn<TData>[]
+  columns: Column<TData>[]
   totalCount: number
   pagination: Pagination
   pageSizeOptions: number[]
@@ -240,7 +245,7 @@ export const Table = <TData extends HasIdObject>({
   const [selection, setSelection] = useState<string[]>([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
-    columns.map((column) => column.id as string)
+    columns.map((column) => column.key)
   )
   const tableViewportRef = useEventListenerRef('scroll', (e) => {
     if (e instanceof Event && e.target instanceof HTMLDivElement) {
@@ -267,9 +272,18 @@ export const Table = <TData extends HasIdObject>({
       current.length === data.length ? [] : data.map((item) => item.id)
     )
 
+  const columnHelper = createColumnHelper<TData>()
+  const transformedColumns = columns.map(({ key, header, render }) => {
+    return columnHelper.accessor((row) => row[key], {
+      header,
+      cell: (info) =>
+        render ? render(info.getValue() as TData) : info.getValue(),
+    })
+  })
+
   const table = useReactTable({
     data,
-    columns,
+    columns: transformedColumns,
     pageCount,
     state: {
       columnVisibility,
