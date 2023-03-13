@@ -364,14 +364,9 @@ export const Table = <TData extends HasIdObject>({
           </Group>
         </div>
         <SimpleBar
-          // ref={tableViewportRef}
           scrollableNodeProps={{ ref: tableViewportRef }}
           style={{ maxHeight: tableViewportHeight }}
         >
-          {/*<ScrollArea*/}
-          {/*  h={tableViewportHeight}*/}
-          {/*  onScrollPositionChange={({ y }) => setScrolled(y !== 0)}*/}
-          {/*>*/}
           <MantineTable horizontalSpacing="md" verticalSpacing="xs" miw={700}>
             <thead
               className={cx(classes.header, { [classes.scrolled]: scrolled })}
